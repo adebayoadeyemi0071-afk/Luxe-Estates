@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LuxeEstate — Properties</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root[data-theme="dark"]{
+      --gold:#c9a84c; --gold-light:#e2c97e; --gold-dim:rgba(201,168,76,0.12);
+      --bg:#080808; --bg2:#0c0c0c; --bg3:#131313;
+      --text:#f0ece4; --muted:rgba(240,236,228,0.5);
+      --border:rgba(255,255,255,0.07); --border-gold:rgba(201,168,76,0.2);
+      --card-bg:#111111; --input-bg:rgba(255,255,255,0.04);
+      --nav-bg:rgba(8,8,8,0.9); --shadow:rgba(0,0,0,0.7);
+      --footer-bg:#000000; --footer-text:#f0ece4; --footer-muted:rgba(240,236,228,0.4);
+    }
+    :root[data-theme="light"]{
+      --gold:#b8922a; --gold-light:#d4a843; --gold-dim:rgba(184,146,42,0.1);
+      --bg:#faf7f0; --bg2:#f3ede1; --bg3:#ece4d4;
+      --text:#1c1408; --muted:rgba(28,20,8,0.55);
+      --border:rgba(0,0,0,0.08); --border-gold:rgba(184,146,42,0.3);
+      --card-bg:#ffffff; --input-bg:rgba(0,0,0,0.04);
+      --nav-bg:rgba(250,247,240,0.94); --shadow:rgba(0,0,0,0.12);
+      --footer-bg:#c9a84c; --footer-text:#0a0a0a; --footer-muted:rgba(10,10,10,0.6);
+    }
+
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;overflow-x:hidden;transition:background 0.4s,color 0.4s;}
+    ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:90;height:76px;display:flex;align-items:center;padding:0 clamp(24px,4vw,72px);justify-content:space-between;background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.1em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;}
+    .nav-logo span{color:var(--gold);font-weight:600;}
+    .nav-logo svg{stroke:var(--gold);}
+    .nav-links{display:flex;gap:clamp(20px,2.5vw,40px);list-style:none;}
+    .nav-links a{font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);}
+    .nav-right{display:flex;gap:14px;align-items:center;}
+    .mode-btn{width:44px;height:24px;background:var(--bg3);border:1px solid var(--border-gold);border-radius:100px;cursor:pointer;position:relative;transition:background 0.3s;flex-shrink:0;}
+    .mode-btn::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--gold);transition:transform 0.3s;}
+    [data-theme="light"] .mode-btn::after{transform:translateX(20px);}
+    .nav-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);padding:8px 16px;border:1px solid var(--border-gold);border-radius:100px;cursor:pointer;transition:background 0.2s;text-decoration:none;}
+    .nav-user:hover{background:var(--gold-dim);}
+    .nav-user .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a87c2a);display:grid;place-items:center;font-size:12px;font-weight:600;color:#0a0a0a;flex-shrink:0;}
+    .btn-outline{padding:9px 20px;border:1px solid var(--border-gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;transition:0.2s;}
+    .btn-outline:hover{background:var(--gold-dim);}
+    .btn-gold{padding:10px 22px;background:var(--gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#0a0a0a;font-weight:500;text-decoration:none;transition:0.2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-gold:hover{opacity:0.88;transform:translateY(-1px);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+    .hamburger span{width:22px;height:1.5px;background:var(--text);transition:0.3s;display:block;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--bg);z-index:89;flex-direction:column;align-items:center;justify-content:center;gap:32px;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s;}
+    .mobile-nav a:hover{color:var(--gold);}
+    .mobile-close{position:absolute;top:24px;right:24px;background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer;}
+
+    /* ── PAGE HEADER ── */
+    .page-header{
+      padding:calc(76px + clamp(40px,6vh,80px)) clamp(24px,6vw,80px) clamp(50px,6vh,80px);
+      background:var(--bg2);position:relative;overflow:hidden;
+    }
+    .page-header::before{
+      content:'';position:absolute;inset:0;
+      background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);
+      background-size:60px 60px;
+    }
+    .page-header-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;}
+    .page-title-group .sec-tag{display:inline-block;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+    .page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,5.5vw,72px);font-weight:300;line-height:1.05;color:var(--text);}
+    .page-title em{font-style:italic;color:var(--gold);}
+    .page-count{font-size:14px;color:var(--muted);margin-top:10px;}
+    .page-count span{color:var(--text);font-weight:500;}
+
+    /* ── FILTERS ── */
+    .filters-bar{
+      background:var(--bg3);border-bottom:1px solid var(--border);
+      padding:clamp(16px,2vh,24px) clamp(24px,6vw,80px);
+      display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+      position:sticky;top:76px;z-index:80;
+      backdrop-filter:blur(16px);
+    }
+    .filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
+    .filter-group label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
+    .filter-group select,.filter-group input{
+      background:var(--input-bg);border:1px solid var(--border);border-radius:8px;
+      padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);
+      outline:none;appearance:none;transition:border-color 0.2s;cursor:pointer;
+    }
+    .filter-group select:focus,.filter-group input:focus{border-color:var(--gold);}
+    .filter-group select option{background:var(--bg3);}
+    .filter-actions{display:flex;gap:10px;align-items:flex-end;padding-top:20px;}
+    .btn-filter{padding:10px 20px;background:var(--gold);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;color:#080808;cursor:pointer;transition:0.2s;white-space:nowrap;}
+    .btn-filter:hover{opacity:0.85;}
+    .btn-reset{padding:10px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;transition:0.2s;white-space:nowrap;}
+    .btn-reset:hover{border-color:var(--border-gold);color:var(--text);}
+
+    /* view toggle */
+    .view-toggle{display:flex;gap:6px;margin-left:auto;}
+    .view-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--muted);transition:0.2s;}
+    .view-btn.active,.view-btn:hover{border-color:var(--border-gold);color:var(--gold);}
+
+    /* ── MAIN CONTENT ── */
+    .main-content{padding:clamp(32px,4vh,56px) clamp(24px,6vw,80px);}
+
+    /* Sort + count bar */
+    .results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(24px,3vh,40px);flex-wrap:wrap;gap:14px;}
+    .results-count{font-size:14px;color:var(--muted);}
+    .results-count strong{color:var(--text);font-weight:500;}
+    .sort-row{display:flex;align-items:center;gap:12px;}
+    .sort-row label{font-size:12px;color:var(--muted);}
+    .sort-select{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;cursor:pointer;appearance:none;}
+    .sort-select:focus{border-color:var(--gold);}
+    .sort-select option{background:var(--bg3);}
+
+    /* ── GRID ── */
+    .properties-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(280px,28vw,380px),1fr));gap:clamp(16px,2vw,28px);}
+    .properties-grid.list-view{grid-template-columns:1fr;}
+    .prop-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      overflow:hidden;transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;cursor:pointer;
+    }
+    .prop-card:hover{transform:translateY(-6px);border-color:var(--border-gold);box-shadow:0 24px 60px var(--shadow);}
+    .prop-img{position:relative;height:clamp(200px,18vw,260px);overflow:hidden;}
+    .list-view .prop-img{height:clamp(200px,22vh,260px);}
+    .prop-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;display:block;}
+    .prop-card:hover .prop-img img{transform:scale(1.06);}
+    .prop-badge{position:absolute;top:14px;left:14px;padding:5px 12px;background:var(--gold);border-radius:6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#080808;font-weight:500;}
+    .prop-badge.sold{background:#666;}
+    .prop-badge.rent{background:#4a9eff;}
+    .prop-fav{position:absolute;top:14px;right:14px;width:36px;height:36px;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:0.2s;}
+    [data-theme="light"] .prop-fav{background:rgba(255,255,255,0.6);}
+    .prop-fav:hover,.prop-fav.active{background:rgba(201,168,76,0.3);border-color:var(--border-gold);}
+    .prop-fav.active svg path{fill:var(--gold);stroke:var(--gold);}
+    .prop-tour{position:absolute;bottom:14px;left:14px;padding:5px 12px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:11px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:5px;}
+    .prop-info{padding:clamp(16px,2vh,24px);}
+    .prop-price{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.2vw,28px);font-weight:400;color:var(--gold);margin-bottom:5px;}
+    .prop-name{font-size:clamp(14px,1.3vw,16px);font-weight:500;color:var(--text);margin-bottom:4px;}
+    .prop-loc{font-size:12px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:5px;}
+    .prop-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;display:none;}
+    .list-view .prop-desc{display:block;}
+    .prop-meta{display:flex;gap:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;}
+    .prop-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
+    .prop-meta-item svg{flex-shrink:0;stroke:var(--muted);}
+    .prop-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+    .prop-tag{padding:3px 10px;border:1px solid var(--border);border-radius:100px;font-size:10px;letter-spacing:0.08em;color:var(--muted);text-transform:capitalize;}
+
+    /* list layout */
+    .list-view .prop-card{display:grid;grid-template-columns:360px 1fr;}
+    @media(max-width:780px){.list-view .prop-card{grid-template-columns:1fr;}}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{text-align:center;padding:80px 24px;display:none;}
+    .empty-state.show{display:block;}
+    .empty-state .icon{font-size:56px;margin-bottom:20px;}
+    .empty-state h3{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--text);margin-bottom:10px;}
+    .empty-state p{font-size:14px;color:var(--muted);}
+
+    /* ── LOAD MORE ── */
+    .load-more-wrap{text-align:center;margin-top:clamp(40px,5vh,64px);}
+    .btn-load{padding:15px 44px;border:1px solid var(--border-gold);border-radius:10px;background:transparent;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:0.25s;}
+    .btn-load:hover{background:var(--gold-dim);}
+
+    /* ── MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;display:none;place-items:center;padding:20px;overflow-y:auto;}
+    .modal-overlay.open{display:grid;}
+    .modal{
+      background:var(--bg2);border:1px solid var(--border-gold);border-radius:24px;
+      max-width:860px;width:100%;max-height:90vh;overflow-y:auto;
+      animation:mIn 0.35s cubic-bezier(0.16,1,0.3,1) both;position:relative;
+    }
+    @keyframes mIn{from{opacity:0;transform:scale(0.94);}to{opacity:1;transform:scale(1);}}
+    .modal-close{position:absolute;top:18px;right:18px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;cursor:pointer;display:grid;place-items:center;color:var(--muted);font-size:16px;z-index:1;transition:0.2s;}
+    .modal-close:hover{border-color:var(--border-gold);color:var(--gold);}
+    .modal-img{height:clamp(240px,30vh,380px);overflow:hidden;border-radius:24px 24px 0 0;}
+    .modal-img img{width:100%;height:100%;object-fit:cover;}
+    .modal-body{padding:clamp(24px,3vh,40px);}
+    .modal-price{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:300;color:var(--gold);margin-bottom:8px;}
+    .modal-name{font-size:clamp(18px,1.8vw,22px);font-weight:500;color:var(--text);margin-bottom:6px;}
+    .modal-loc{font-size:14px;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:6px;}
+    .modal-meta{display:flex;gap:20px;flex-wrap:wrap;padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:20px;}
+    .modal-meta-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);}
+    .modal-desc{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:24px;}
+    .modal-actions{display:flex;gap:12px;flex-wrap:wrap;}
+    .modal-btn{padding:13px 28px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:0.2s;}
+    .modal-btn.primary{background:var(--gold);color:#0a0a0a;border:none;box-shadow:0 4px 20px rgba(201,168,76,0.3);}
+    .modal-btn.primary:hover{opacity:0.88;transform:translateY(-1px);}
+    .modal-btn.secondary{background:transparent;border:1px solid var(--border-gold);color:var(--gold);}
+    .modal-btn.secondary:hover{background:var(--gold-dim);}
+
+    /* Toast */
+    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#0a0a0a;padding:12px 26px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
+
+    /* FOOTER */
+    footer{background:var(--footer-bg);color:var(--footer-text);padding:clamp(50px,7vh,80px) clamp(24px,6vw,80px) clamp(24px,3vh,40px);transition:background 0.4s,color 0.4s;}
+    .footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:clamp(32px,4vw,64px);margin-bottom:clamp(40px,5vh,60px);}
+    .footer-brand .logo-name{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2vw,28px);font-weight:300;letter-spacing:0.1em;margin-bottom:14px;}
+    .footer-brand .logo-name span{color:var(--gold);}
+    [data-theme="light"] footer .footer-brand .logo-name span{color:#5c3a00;}
+    .footer-brand p{font-size:14px;color:var(--footer-muted);line-height:1.75;max-width:280px;}
+    .footer-social{display:flex;gap:10px;margin-top:24px;}
+    .social-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);display:grid;place-items:center;font-size:13px;color:var(--footer-text);text-decoration:none;transition:0.2s;}
+    [data-theme="light"] .social-btn{border-color:rgba(0,0,0,0.15);}
+    .social-btn:hover{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+    footer h5{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+    [data-theme="light"] footer h5{color:#5c3a00;}
+    footer ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+    footer ul a{font-size:14px;color:var(--footer-muted);text-decoration:none;transition:color 0.2s;}
+    footer ul a:hover{color:var(--footer-text);}
+    .footer-bottom{padding-top:clamp(20px,3vh,32px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    [data-theme="light"] .footer-bottom{border-top-color:rgba(0,0,0,0.15);}
+    .footer-bottom p{font-size:13px;color:var(--footer-muted);}
+
+    /* RESPONSIVE */
+    @media(max-width:900px){.nav-links{display:none;}.nav-right .btn-outline,.nav-right .btn-gold,.nav-right .nav-user{display:none;}.hamburger{display:flex;}.footer-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){.filters-bar{gap:10px;}.filter-group{min-width:calc(50% - 8px);}.footer-grid{grid-template-columns:1fr;}.view-toggle{display:none;}}
+    @media(min-width:1800px){.properties-grid{grid-template-columns:repeat(auto-fill,minmax(380px,1fr));}}
+    @media(min-width:2400px){.properties-grid{grid-template-columns:repeat(auto-fill,minmax(440px,1fr));}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    Luxe<span>Estate</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="listings.html" class="active">Properties</a></li>
+    <li><a href="about.html">Our Story</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="mode-btn" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+    <div id="navUserArea"></div>
+    <button class="hamburger" onclick="document.getElementById('mobileNav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="document.getElementById('mobileNav').classList.remove('open')">✕</button>
+  <a href="index.html">Home</a>
+  <a href="listings.html">Properties</a>
+  <a href="about.html">Our Story</a>
+  <a href="index.html#contact">Contact</a>
+  <a href="login.html">Sign In</a>
+</div>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title-group">
+      <div class="sec-tag">All Properties</div>
+      <h1 class="page-title">Explore <em>Exceptional</em><br/>Properties</h1>
+      <div class="page-count">Showing <span id="visibleCount">18</span> of <span>18</span> properties</div>
+    </div>
+    <a href="index.html#contact" class="btn-gold" style="padding:14px 28px">Request Private Viewing</a>
+  </div>
+</div>
+
+<!-- ── FILTERS ── -->
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Location</label>
+    <input type="text" id="fLocation" placeholder="Any location" oninput="filterProperties()"/>
+  </div>
+  <div class="filter-group">
+    <label>Property Type</label>
+    <select id="fType" onchange="filterProperties()">
+      <option value="">All Types</option>
+      <option value="villa">Villa / House</option>
+      <option value="penthouse">Penthouse</option>
+      <option value="commercial">Commercial</option>
+      <option value="waterfront">Waterfront</option>
+      <option value="estate">Estate</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Min Price</label>
+    <select id="fMinPrice" onchange="filterProperties()">
+      <option value="0">Any</option>
+      <option value="1000000">$1M+</option>
+      <option value="3000000">$3M+</option>
+      <option value="5000000">$5M+</option>
+      <option value="10000000">$10M+</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Bedrooms</label>
+    <select id="fBeds" onchange="filterProperties()">
+      <option value="0">Any</option>
+      <option value="2">2+</option>
+      <option value="3">3+</option>
+      <option value="4">4+</option>
+      <option value="6">6+</option>
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button class="btn-filter" onclick="filterProperties()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+  </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </button>
+    <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main-content">
+  <div class="results-bar">
+    <div class="results-count">Showing <strong id="countText">18</strong> properties</div>
+    <div class="sort-row">
+      <label>Sort by</label>
+      <select class="sort-select" onchange="sortProperties(this.value)">
+        <option value="featured">Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="newest">Newest First</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="properties-grid" id="propertiesGrid"></div>
+  <div class="empty-state" id="emptyState">
+    <div class="icon">🏠</div>
+    <h3>No Properties Found</h3>
+    <p>Try adjusting your search filters to discover more properties.</p>
+  </div>
+
+  <div class="load-more-wrap" id="loadMoreWrap">
+    <button class="btn-load" onclick="loadMore()">Load More Properties</button>
+  </div>
+</div>
+
+<!-- ── PROPERTY MODAL ── -->
+<div class="modal-overlay" id="propModal" onclick="closeModalOutside(event)">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-img"><img id="modalImg" src="" alt=""/></div>
+    <div class="modal-body">
+      <div class="modal-price" id="modalPrice"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-loc" id="modalLoc">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="modalLocText"></span>
+      </div>
+      <div class="modal-meta" id="modalMeta"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-actions">
+        <button class="modal-btn primary" onclick="closeModal();showToast('Request submitted! Our team will contact you shortly.')">Schedule Viewing</button>
+        <button class="modal-btn secondary" onclick="closeModal();showToast('Property saved to your favourites.')">Save Property</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-name">Luxe<span>Estate</span></div>
+      <p>Connecting discerning clients with the world's most exceptional properties since 2009.</p>
+      <div class="footer-social"><a href="#" class="social-btn">in</a><a href="#" class="social-btn">𝕏</a><a href="#" class="social-btn">ig</a><a href="#" class="social-btn">fb</a></div>
+    </div>
+    <div><h5>Properties</h5><ul><li><a href="#">Residential</a></li><li><a href="#">Commercial</a></li><li><a href="#">Luxury Villas</a></li><li><a href="#">New Developments</a></li></ul></div>
+    <div><h5>Company</h5><ul><li><a href="about.html">About Us</a></li><li><a href="about.html#team">Our Team</a></li><li><a href="about.html#awards">Awards</a></li><li><a href="#">Careers</a></li></ul></div>
+    <div><h5>Support</h5><ul><li><a href="index.html#contact">Contact</a></li><li><a href="#">FAQ</a></li><li><a href="#">Privacy</a></li><li><a href="login.html">Client Portal</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LuxeEstate. All rights reserved.</p>
+    <p>Designed with excellence.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── THEME ── */
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('luxeTheme',t);}
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');}
+applyTheme(localStorage.getItem('luxeTheme')||'dark');
+
+/* ── AUTH ── */
+function setupAuth(){
+  const user=JSON.parse(localStorage.getItem('luxeUser')||'null');
+  const area=document.getElementById('navUserArea');
+  if(user&&user.loggedIn){
+    area.innerHTML=`<a class="nav-user" href="#" onclick="handleLogout(event)"><span class="avatar">${user.name.charAt(0)}</span><span>Welcome, ${user.name.split(' ')[0]}</span></a>`;
+  } else {
+    area.innerHTML=`<a href="login.html" class="btn-outline">Sign In</a><a href="login.html" class="btn-gold">Get Started</a>`;
+  }
+}
+function handleLogout(e){e.preventDefault();if(confirm('Sign out?')){localStorage.removeItem('luxeUser');location.reload();}}
+setupAuth();
+
+/* ── DATA ── */
+const allProperties = [
+  {id:1,img:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',price:8500000,priceDisplay:'$8,500,000',name:'Villa Serenita',loc:'Beverly Hills, CA',beds:6,baths:7,sqft:'9,200',badge:'For Sale',type:'villa',tags:['pool','garden','smart home'],desc:'A breathtaking contemporary villa nestled in the heart of Beverly Hills. Boasting panoramic city views, an infinity pool, and bespoke interiors designed by a leading New York atelier.',year:2022},
+  {id:2,img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',price:4200000,priceDisplay:'$4,200,000',name:'The Arch Residence',loc:'Miami Beach, FL',beds:4,baths:5,sqft:'5,800',badge:'New',type:'villa',tags:['beachfront','garage','smart home'],desc:'A striking architectural masterpiece on Miami Beach with direct ocean access. Floor-to-ceiling glass walls blur the line between interior living and the Atlantic Ocean.',year:2023},
+  {id:3,img:'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80',price:12000000,priceDisplay:'$12,000,000',name:'Coastal Manor',loc:'Malibu, CA',beds:7,baths:8,sqft:'12,400',badge:'Exclusive',type:'estate',tags:['oceanfront','helipad','wine cellar'],desc:'An incomparable Malibu estate with 280-degree Pacific ocean views. One of Malibu\'s most coveted addresses, featuring private beach access and a guest compound.',year:2019},
+  {id:4,img:'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80',price:6750000,priceDisplay:'$6,750,000',name:'Azure Beachfront',loc:'Hamptons, NY',beds:5,baths:6,sqft:'7,100',badge:'For Sale',type:'waterfront',tags:['pool','tennis','boathouse'],desc:'A classic Hamptons estate with direct beach access and stunning Atlantic views. Beautifully landscaped grounds with a heated pool, tennis court, and private dock.',year:2020},
+  {id:5,img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',price:3900000,priceDisplay:'$3,900,000',name:'Skyline Penthouse',loc:'Manhattan, NY',beds:3,baths:4,sqft:'4,200',badge:'Featured',type:'penthouse',tags:['doorman','terrace','city views'],desc:'A spectacular full-floor penthouse atop one of Manhattan\'s most prestigious residential towers. The wrap-around terrace offers unobstructed views of the city skyline.',year:2021},
+  {id:6,img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',price:9200000,priceDisplay:'$9,200,000',name:'Palm Springs Estate',loc:'Palm Springs, CA',beds:6,baths:7,sqft:'10,600',badge:'Luxury',type:'estate',tags:['resort pool','mountains','spa'],desc:'A museum-quality mid-century modern estate in the coveted Movie Colony neighbourhood. The resort-style grounds include a pool, spa, and guest casita.',year:2018},
+  {id:7,img:'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80',price:5400000,priceDisplay:'$5,400,000',name:'The Glass House',loc:'Aspen, CO',beds:4,baths:5,sqft:'6,800',badge:'New',type:'villa',tags:['ski-in/out','fireplace','mountain views'],desc:'An iconic glass pavilion floating above Aspen\'s most exclusive enclave. Direct ski-in/ski-out access, dramatic mountain vistas, and a double-sided stone fireplace.',year:2024},
+  {id:8,img:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',price:7800000,priceDisplay:'$7,800,000',name:'The Observatory Tower',loc:'Chicago, IL',beds:4,baths:4,sqft:'5,400',badge:'For Sale',type:'penthouse',tags:['rooftop','lake views','concierge'],desc:'A truly one-of-a-kind penthouse with private rooftop observatory. Stunning Lake Michigan views from every room of this architecturally significant residence.',year:2021},
+  {id:9,img:'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80',price:15500000,priceDisplay:'$15,500,000',name:'Villa Bellagio',loc:'Lake Como, Italy',beds:8,baths:9,sqft:'15,200',badge:'Exclusive',type:'villa',tags:['lakefront','boat dock','vineyard'],desc:'A legendary Italian villa on the shores of Lake Como. An extraordinary estate with centuries of history, private lakefront, and beautifully preserved frescoed interiors.',year:2015},
+  {id:10,img:'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80',price:3200000,priceDisplay:'$3,200,000',name:'Modern Farmhouse',loc:'Nashville, TN',beds:5,baths:6,sqft:'6,200',badge:'New',type:'villa',tags:['barn','acreage','smart home'],desc:'A spectacular new build on 12 acres of rolling Tennessee countryside. Striking modern farmhouse design with premium finishes and state-of-the-art smart home technology.',year:2024},
+  {id:11,img:'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80',price:22000000,priceDisplay:'$22,000,000',name:'Monaco Grand Apartment',loc:'Monte Carlo, Monaco',beds:5,baths:6,sqft:'7,800',badge:'Exclusive',type:'penthouse',tags:['F1 views','private lift','yacht dock'],desc:'Arguably the most enviable address in Monaco — a triplex penthouse with an unobstructed view of the Formula 1 Grand Prix circuit and a private yacht berth.',year:2020},
+  {id:12,img:'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&q=80',price:4800000,priceDisplay:'$4,800,000',name:'Pacific Heights Mansion',loc:'San Francisco, CA',beds:6,baths:7,sqft:'8,600',badge:'For Sale',type:'estate',tags:['bay views','wine cellar','gym'],desc:'A grand Victorian-era mansion completely restored to the highest modern standard while preserving all original architectural details. Sweeping views of the San Francisco Bay.',year:2017},
+  {id:13,img:'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80',price:11200000,priceDisplay:'$11,200,000',name:'Canyon Crest Estate',loc:'Scottsdale, AZ',beds:7,baths:8,sqft:'13,500',badge:'Luxury',type:'estate',tags:['infinity pool','tennis','golf course'],desc:'A palatial desert retreat perched above Scottsdale\'s most prestigious golf community. The negative-edge pool appears to float above the spectacular canyon below.',year:2021},
+  {id:14,img:'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&q=80',price:1850000,priceDisplay:'$1,850,000',name:'Riverside Loft',loc:'Austin, TX',beds:2,baths:3,sqft:'3,200',badge:'For Rent',type:'penthouse',tags:['river views','rooftop','gym'],desc:'A stunning industrial-chic loft in Austin\'s most vibrant district. Exposed concrete, 14-foot ceilings, and panoramic views of Lady Bird Lake from every room.',year:2022},
+  {id:15,img:'https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=800&q=80',price:6300000,priceDisplay:'$6,300,000',name:'Harbour View Tower',loc:'Sydney, Australia',beds:3,baths:3,sqft:'4,100',badge:'New',type:'penthouse',tags:['harbour views','concierge','private pool'],desc:'The crown jewel of Sydney\'s most prestigious harbourside development. Watch the Sydney Opera House from your living room in this extraordinary sky-high retreat.',year:2024},
+  {id:16,img:'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=800&q=80',price:3600000,priceDisplay:'$3,600,000',name:'Alpine Chalet',loc:'Vail, CO',beds:5,baths:5,sqft:'5,900',badge:'For Sale',type:'villa',tags:['ski chalet','hot tub','mountain views'],desc:'An impeccably appointed alpine chalet in the heart of Vail Village. Slopeside position, vaulted great room with stone fireplace, and a wraparound deck with mountain panoramas.',year:2020},
+  {id:17,img:'https://images.unsplash.com/photo-1585129777188-94600bc7b4b3?w=800&q=80',price:18500000,priceDisplay:'$18,500,000',name:'Bel-Air Trophy Estate',loc:'Los Angeles, CA',beds:9,baths:11,sqft:'18,000',badge:'Exclusive',type:'estate',tags:['cinema','tennis','4 car garage'],desc:'One of the most spectacular trophy estates in Bel-Air\'s most coveted street. A cinematic property with every conceivable luxury amenity across 18,000 square feet.',year:2019},
+  {id:18,img:'https://images.unsplash.com/photo-1632323471753-c73df5a7ec82?w=800&q=80',price:2750000,priceDisplay:'$2,750,000',name:'Heritage Row Townhouse',loc:'Georgetown, DC',beds:4,baths:4,sqft:'4,800',badge:'For Sale',type:'villa',tags:['historic','patio','garage'],desc:'A beautifully restored 19th-century Federal-style townhouse on Georgetown\'s most desirable row. Original architectural details preserved alongside flawless modern interiors.',year:2018},
+];
+
+let displayedCount = 12;
+let filteredProperties = [...allProperties];
+let currentView = 'grid';
+
+function renderGrid(props){
+  const grid = document.getElementById('propertiesGrid');
+  const empty = document.getElementById('emptyState');
+  const loadMore = document.getElementById('loadMoreWrap');
+  const showing = props.slice(0, displayedCount);
+
+  if(props.length===0){grid.innerHTML='';empty.classList.add('show');loadMore.style.display='none';}
+  else {
+    empty.classList.remove('show');
+    loadMore.style.display = props.length > displayedCount ? 'block' : 'none';
+    grid.innerHTML = showing.map((p,i)=>`
+      <div class="prop-card" onclick="openModal(${p.id})" style="opacity:0;transform:translateY(20px);animation:cardReveal 0.5s ${i*0.06}s both">
+        <div class="prop-img">
+          <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+          <div class="prop-badge${p.badge==='For Rent'?' rent':''}">${p.badge}</div>
+          <div class="prop-fav" id="fav${p.id}" onclick="toggleFav(event,${p.id})">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="prop-tour">▶ Virtual Tour</div>
+        </div>
+        <div class="prop-info">
+          <div class="prop-price">${p.priceDisplay}</div>
+          <div class="prop-name">${p.name}</div>
+          <div class="prop-loc"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${p.loc}</div>
+          <div class="prop-desc">${p.desc}</div>
+          <div class="prop-meta">
+            <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M2 20v-3a4 4 0 014-4h12a4 4 0 014 4v3"/><circle cx="12" cy="7" r="4"/></svg>${p.beds} Beds</div>
+            <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/></svg>${p.baths} Baths</div>
+            <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${p.sqft} sqft</div>
+          </div>
+          <div class="prop-tags">${p.tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('countText').textContent = Math.min(props.length, displayedCount);
+  document.getElementById('visibleCount').textContent = Math.min(props.length, displayedCount);
+}
+
+const styleEl = document.createElement('style');
+styleEl.textContent = '@keyframes cardReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}';
+document.head.appendChild(styleEl);
+
+function filterProperties(){
+  const loc = document.getElementById('fLocation').value.toLowerCase();
+  const type = document.getElementById('fType').value;
+  const minPrice = parseInt(document.getElementById('fMinPrice').value)||0;
+  const minBeds = parseInt(document.getElementById('fBeds').value)||0;
+  filteredProperties = allProperties.filter(p=>{
+    if(loc && !p.loc.toLowerCase().includes(loc) && !p.name.toLowerCase().includes(loc)) return false;
+    if(type && p.type!==type) return false;
+    if(p.price < minPrice) return false;
+    if(p.beds < minBeds) return false;
+    return true;
+  });
+  displayedCount = 12;
+  renderGrid(filteredProperties);
+}
+
+function resetFilters(){
+  document.getElementById('fLocation').value='';
+  document.getElementById('fType').value='';
+  document.getElementById('fMinPrice').value='0';
+  document.getElementById('fBeds').value='0';
+  filteredProperties=[...allProperties];
+  displayedCount=12;
+  renderGrid(filteredProperties);
+}
+
+function sortProperties(by){
+  if(by==='price-asc') filteredProperties.sort((a,b)=>a.price-b.price);
+  else if(by==='price-desc') filteredProperties.sort((a,b)=>b.price-a.price);
+  else if(by==='newest') filteredProperties.sort((a,b)=>b.year-a.year);
+  else filteredProperties=[...allProperties];
+  renderGrid(filteredProperties);
+}
+
+function loadMore(){
+  displayedCount = Math.min(displayedCount+6, filteredProperties.length);
+  renderGrid(filteredProperties);
+}
+
+function setView(v){
+  currentView=v;
+  const grid = document.getElementById('propertiesGrid');
+  grid.classList.toggle('list-view', v==='list');
+  document.getElementById('gridBtn').classList.toggle('active',v==='grid');
+  document.getElementById('listBtn').classList.toggle('active',v==='list');
+}
+
+function toggleFav(e,id){
+  e.stopPropagation();
+  const el=document.getElementById('fav'+id);
+  el.classList.toggle('active');
+  showToast(el.classList.contains('active')?'Saved to favourites':'Removed from favourites');
+}
+
+/* ── MODAL ── */
+function openModal(id){
+  const p = allProperties.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modalImg').src=p.img;
+  document.getElementById('modalImg').alt=p.name;
+  document.getElementById('modalPrice').textContent=p.priceDisplay;
+  document.getElementById('modalName').textContent=p.name;
+  document.getElementById('modalLocText').textContent=p.loc;
+  document.getElementById('modalDesc').textContent=p.desc;
+  document.getElementById('modalMeta').innerHTML=`
+    <div class="modal-meta-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 20v-3a4 4 0 014-4h12a4 4 0 014 4v3"/><circle cx="12" cy="7" r="4"/></svg>${p.beds} Bedrooms</div>
+    <div class="modal-meta-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/></svg>${p.baths} Bathrooms</div>
+    <div class="modal-meta-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${p.sqft} sqft</div>
+    <div class="modal-meta-item">🏷 ${p.badge}</div>
+    <div class="modal-meta-item">📅 Built ${p.year}</div>
+  `;
+  document.getElementById('propModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('propModal').classList.remove('open');document.body.style.overflow='';}
+function closeModalOutside(e){if(e.target===e.currentTarget)closeModal();}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// keyboard support
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// init
+renderGrid(filteredProperties);
+</script>
+</body>
+</html>

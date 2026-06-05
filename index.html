@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LuxeEstate — Premium Real Estate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+    /* ── THEME VARIABLES ── */
+    :root[data-theme="dark"]{
+      --gold:#c9a84c; --gold-light:#e2c97e; --gold-dim:rgba(201,168,76,0.12);
+      --bg:#080808; --bg2:#0c0c0c; --bg3:#131313;
+      --text:#f0ece4; --muted:rgba(240,236,228,0.5);
+      --border:rgba(255,255,255,0.07); --border-gold:rgba(201,168,76,0.2);
+      --card-bg:#111111; --input-bg:rgba(255,255,255,0.04);
+      --nav-bg:rgba(8,8,8,0.9); --shadow:rgba(0,0,0,0.7);
+      --footer-bg:#000000; --footer-text:#f0ece4; --footer-muted:rgba(240,236,228,0.4);
+      --hero-overlay:linear-gradient(135deg,#0a0805 0%,#080808 55%,#06090e 100%);
+      --mode-icon:'☀';
+    }
+    :root[data-theme="light"]{
+      --gold:#b8922a; --gold-light:#d4a843; --gold-dim:rgba(184,146,42,0.1);
+      --bg:#faf7f0; --bg2:#f3ede1; --bg3:#ece4d4;
+      --text:#1c1408; --muted:rgba(28,20,8,0.55);
+      --border:rgba(0,0,0,0.08); --border-gold:rgba(184,146,42,0.3);
+      --card-bg:#ffffff; --input-bg:rgba(0,0,0,0.04);
+      --nav-bg:rgba(250,247,240,0.94); --shadow:rgba(0,0,0,0.12);
+      --footer-bg:#c9a84c; --footer-text:#0a0a0a; --footer-muted:rgba(10,10,10,0.6);
+      --hero-overlay:linear-gradient(135deg,#f5ede0 0%,#faf7f0 50%,#eef5f8 100%);
+      --mode-icon:'🌙';
+    }
+
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;overflow-x:hidden;transition:background 0.4s,color 0.4s;}
+    ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+    /* ── NAV ── */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:90;height:76px;
+      display:flex;align-items:center;padding:0 clamp(24px,4vw,72px);
+      justify-content:space-between;transition:background 0.4s,backdrop-filter 0.4s,border-bottom 0.4s;
+    }
+    nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.1em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;}
+    .nav-logo span{color:var(--gold);font-weight:600;}
+    .nav-logo svg{stroke:var(--gold);}
+    .nav-links{display:flex;gap:clamp(20px,2.5vw,40px);list-style:none;}
+    .nav-links a{font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);}
+    .nav-right{display:flex;gap:14px;align-items:center;}
+
+    /* Mode toggle */
+    .mode-btn{
+      width:44px;height:24px;background:var(--bg3);border:1px solid var(--border-gold);
+      border-radius:100px;cursor:pointer;position:relative;transition:background 0.3s;
+      flex-shrink:0;
+    }
+    .mode-btn::after{
+      content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;
+      border-radius:50%;background:var(--gold);transition:transform 0.3s;
+    }
+    [data-theme="light"] .mode-btn::after{transform:translateX(20px);}
+
+    .nav-user{
+      display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);
+      padding:8px 16px;border:1px solid var(--border-gold);border-radius:100px;
+      cursor:pointer;transition:background 0.2s;text-decoration:none;
+    }
+    .nav-user:hover{background:var(--gold-dim);}
+    .nav-user .avatar{
+      width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a87c2a);
+      display:grid;place-items:center;font-size:12px;font-weight:600;color:#0a0a0a;flex-shrink:0;
+    }
+    .btn-outline{padding:9px 20px;border:1px solid var(--border-gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;transition:0.2s;}
+    .btn-outline:hover{background:var(--gold-dim);}
+    .btn-gold{padding:10px 22px;background:var(--gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#0a0a0a;font-weight:500;text-decoration:none;transition:0.2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-gold:hover{opacity:0.88;transform:translateY(-1px);}
+
+    /* Hamburger */
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+    .hamburger span{width:22px;height:1.5px;background:var(--text);transition:0.3s;display:block;}
+    .mobile-nav{
+      display:none;position:fixed;inset:0;background:var(--bg);z-index:89;
+      flex-direction:column;align-items:center;justify-content:center;gap:32px;
+    }
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s;}
+    .mobile-nav a:hover{color:var(--gold);}
+    .mobile-close{position:absolute;top:24px;right:24px;background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer;}
+
+    /* ── HERO ── */
+    #hero{
+      min-height:100vh;display:flex;align-items:center;
+      padding:calc(76px + clamp(30px,5vh,60px)) clamp(24px,6vw,80px) clamp(60px,8vh,100px);
+      position:relative;overflow:hidden;
+    }
+    .hero-bg{position:absolute;inset:0;z-index:0;background:var(--hero-overlay);}
+    [data-theme="dark"] .hero-bg::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 70% 60% at 70% 50%,rgba(201,168,76,0.07) 0%,transparent 70%);
+    }
+    [data-theme="light"] .hero-bg::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 70% 60% at 70% 50%,rgba(184,146,42,0.08) 0%,transparent 70%);
+    }
+    .hero-bg::after{
+      content:'';position:absolute;inset:0;
+      background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);
+      background-size:80px 80px;animation:gridMove 20s linear infinite;
+    }
+    [data-theme="light"] .hero-bg::after{
+      background-image:linear-gradient(rgba(184,146,42,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(184,146,42,0.06) 1px,transparent 1px);
+    }
+    @keyframes gridMove{from{background-position:0 0;}to{background-position:80px 80px;}}
+
+    .hero-img-panel{
+      position:absolute;right:0;top:0;bottom:0;width:50%;z-index:0;overflow:hidden;
+    }
+    .hero-img-panel img{width:100%;height:100%;object-fit:cover;opacity:0.22;transition:opacity 0.5s;}
+    [data-theme="light"] .hero-img-panel img{opacity:0.18;}
+    .hero-img-panel::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,transparent 50%);z-index:1;}
+    .hero-img-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,transparent 40%);z-index:1;}
+
+    .hero-content{position:relative;z-index:1;max-width:720px;}
+    .hero-tag{
+      display:inline-flex;align-items:center;gap:8px;padding:6px 16px;
+      border:1px solid var(--border-gold);border-radius:100px;
+      font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:28px;animation:fadeUp 0.8s 0.1s both;
+    }
+    .hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+    .hero-title{
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(52px,7.5vw,96px);font-weight:300;line-height:1.02;
+      letter-spacing:-0.01em;color:var(--text);margin-bottom:24px;
+      animation:fadeUp 0.8s 0.25s both;
+    }
+    .hero-title em{color:var(--gold);font-style:italic;}
+    .hero-sub{font-size:clamp(14px,1.5vw,17px);color:var(--muted);max-width:500px;margin-bottom:44px;line-height:1.8;animation:fadeUp 0.8s 0.4s both;}
+    .hero-actions{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp 0.8s 0.55s both;}
+    .btn-lg{padding:clamp(14px,1.5vh,18px) clamp(28px,2.5vw,40px);border-radius:10px;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;font-weight:500;transition:0.25s;display:inline-block;}
+    .btn-lg.gold{background:var(--gold);color:#080808;box-shadow:0 8px 32px rgba(201,168,76,0.3);}
+    .btn-lg.gold:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(201,168,76,0.42);}
+    .btn-lg.ghost{border:1px solid var(--border-gold);color:var(--text);}
+    .btn-lg.ghost:hover{background:var(--gold-dim);}
+
+    .hero-stats{display:flex;gap:clamp(32px,4vw,60px);margin-top:clamp(40px,6vh,80px);padding-top:clamp(30px,4vh,56px);border-top:1px solid var(--border);animation:fadeUp 0.8s 0.7s both;flex-wrap:wrap;}
+    .stat-val{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,52px);font-weight:300;color:var(--text);line-height:1;}
+    .stat-val span{color:var(--gold);}
+    .stat-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+
+    /* ── SEARCH BAR ── */
+    #search-bar{background:var(--bg2);padding:0 clamp(24px,6vw,80px);position:relative;z-index:5;}
+    .search-box{
+      background:var(--bg3);border:1px solid var(--border-gold);border-radius:16px;
+      padding:clamp(20px,2.5vh,32px) clamp(20px,2.5vw,36px);
+      display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;
+      transform:translateY(-50%);box-shadow:0 24px 60px var(--shadow);
+    }
+    .s-group{flex:1;min-width:150px;}
+    .s-group label{display:block;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+    .s-group select,.s-group input{
+      width:100%;background:var(--input-bg);border:1px solid var(--border);
+      border-radius:8px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;
+      color:var(--text);outline:none;appearance:none;transition:border-color 0.2s;
+    }
+    .s-group select:focus,.s-group input:focus{border-color:var(--gold);}
+    .s-group select option{background:var(--bg3);}
+    .btn-search{
+      padding:14px clamp(20px,2vw,32px);background:var(--gold);border:none;border-radius:8px;
+      font-family:'DM Sans',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;
+      font-weight:500;color:#080808;cursor:pointer;white-space:nowrap;transition:opacity 0.2s,transform 0.2s;
+    }
+    .btn-search:hover{opacity:0.85;transform:translateY(-1px);}
+
+    /* ── SECTION COMMONS ── */
+    section{padding:clamp(60px,8vh,120px) clamp(24px,6vw,80px);}
+    .sec-tag{display:inline-block;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+    .sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4.5vw,62px);font-weight:300;line-height:1.1;color:var(--text);}
+    .sec-title em{font-style:italic;color:var(--gold);}
+    .sec-sub{font-size:clamp(13px,1.3vw,16px);color:var(--muted);max-width:500px;margin-top:16px;line-height:1.8;}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    /* ── SPONSORS ── */
+    #sponsors{background:var(--bg2);padding:clamp(40px,5vh,64px) 0;overflow:hidden;}
+    .sponsors-label{text-align:center;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:var(--muted);margin-bottom:32px;}
+    .sponsors-track-wrap{overflow:hidden;position:relative;}
+    .sponsors-track-wrap::before,.sponsors-track-wrap::after{
+      content:'';position:absolute;top:0;bottom:0;width:160px;z-index:2;pointer-events:none;
+    }
+    .sponsors-track-wrap::before{left:0;background:linear-gradient(90deg,var(--bg2),transparent);}
+    .sponsors-track-wrap::after{right:0;background:linear-gradient(-90deg,var(--bg2),transparent);}
+    .sponsors-track{display:flex;gap:0;animation:marquee 30s linear infinite;width:max-content;}
+    .sponsors-track:hover{animation-play-state:paused;}
+    @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    .sponsor-item{
+      display:flex;align-items:center;gap:10px;padding:0 clamp(28px,3vw,56px);
+      border-right:1px solid var(--border);flex-shrink:0;height:72px;
+      color:var(--muted);transition:color 0.3s;cursor:default;
+    }
+    .sponsor-item:hover{color:var(--gold);}
+    .sponsor-logo{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,1.8vw,22px);font-weight:300;letter-spacing:0.08em;white-space:nowrap;}
+    .sponsor-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:0.4;flex-shrink:0;}
+
+    /* ── LISTINGS (CAROUSEL) ── */
+    #listings{background:var(--bg);}
+    .listings-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(36px,5vh,60px);flex-wrap:wrap;gap:20px;}
+    .carousel-wrap{position:relative;}
+    .carousel{
+      display:flex;gap:clamp(16px,1.8vw,28px);overflow-x:hidden;
+      scroll-behavior:smooth;padding-bottom:8px;cursor:grab;
+      -webkit-overflow-scrolling:touch;
+    }
+    .carousel:active{cursor:grabbing;}
+    .prop-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      overflow:hidden;transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;
+      cursor:pointer;flex-shrink:0;width:clamp(280px,30vw,380px);
+    }
+    .prop-card:hover{transform:translateY(-6px);border-color:var(--border-gold);box-shadow:0 24px 60px var(--shadow);}
+    .prop-img{position:relative;height:clamp(180px,18vw,240px);overflow:hidden;}
+    .prop-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;display:block;}
+    .prop-card:hover .prop-img img{transform:scale(1.06);}
+    .prop-badge{position:absolute;top:14px;left:14px;padding:5px 12px;background:var(--gold);border-radius:6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#080808;font-weight:500;}
+    .prop-fav{
+      position:absolute;top:14px;right:14px;width:36px;height:36px;
+      background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border-radius:50%;
+      display:grid;place-items:center;border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:0.2s;
+    }
+    [data-theme="light"] .prop-fav{background:rgba(255,255,255,0.6);}
+    .prop-fav:hover{background:rgba(201,168,76,0.3);}
+    .prop-fav.active svg path{fill:var(--gold);stroke:var(--gold);}
+    .prop-info{padding:clamp(18px,2vh,24px);}
+    .prop-price{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.2vw,28px);font-weight:400;color:var(--gold);margin-bottom:6px;}
+    .prop-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px;}
+    .prop-loc{font-size:12px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:5px;}
+    .prop-meta{display:flex;gap:16px;padding-top:16px;border-top:1px solid var(--border);}
+    .prop-meta-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+    .prop-meta-item svg{flex-shrink:0;stroke:var(--muted);}
+
+    /* Carousel arrows */
+    .car-btn{
+      position:absolute;top:50%;transform:translateY(-50%);
+      width:clamp(40px,3.5vw,52px);height:clamp(40px,3.5vw,52px);
+      background:var(--card-bg);border:1px solid var(--border-gold);border-radius:50%;
+      display:grid;place-items:center;cursor:pointer;transition:0.25s;z-index:2;
+      color:var(--gold);
+    }
+    .car-btn:hover{background:var(--gold);color:#080808;border-color:var(--gold);}
+    .car-btn.prev{left:-20px;}
+    .car-btn.next{right:-20px;}
+    .car-dots{display:flex;gap:8px;justify-content:center;margin-top:28px;}
+    .car-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:0.2s;cursor:pointer;}
+    .car-dot.active{background:var(--gold);width:20px;border-radius:3px;}
+
+    /* ── FEATURES ── */
+    #features{background:var(--bg2);}
+    .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,5vw,80px);align-items:center;}
+    .feature-img{position:relative;border-radius:20px;overflow:hidden;height:clamp(300px,35vw,520px);}
+    .feature-img img{width:100%;height:100%;object-fit:cover;}
+    .feature-img::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,0.4));}
+    .feature-badge{
+      position:absolute;bottom:24px;left:24px;right:24px;
+      background:rgba(0,0,0,0.65);backdrop-filter:blur(16px);border:1px solid var(--border-gold);
+      border-radius:12px;padding:18px 22px;display:flex;gap:16px;align-items:center;z-index:1;
+    }
+    [data-theme="light"] .feature-badge{background:rgba(255,255,255,0.75);}
+    .feature-badge-icon{font-size:28px;}
+    .feature-badge-text strong{display:block;font-size:18px;color:var(--text);font-family:'Cormorant Garamond',serif;}
+    .feature-badge-text span{font-size:12px;color:var(--muted);}
+    .feature-items{display:flex;flex-direction:column;gap:28px;}
+    .feature-item{display:flex;gap:20px;align-items:flex-start;padding:24px;border-radius:12px;border:1px solid transparent;transition:0.3s;cursor:default;}
+    .feature-item:hover{background:var(--bg3);border-color:var(--border-gold);}
+    .feature-dot{
+      width:48px;height:48px;border-radius:12px;background:var(--gold-dim);
+      border:1px solid var(--border-gold);display:grid;place-items:center;font-size:22px;flex-shrink:0;
+    }
+    .feature-item h4{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
+    .feature-item p{font-size:14px;color:var(--muted);line-height:1.7;}
+
+    /* ── TESTIMONIALS ── */
+    #testimonials{background:var(--bg);}
+    .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,28px);margin-top:clamp(40px,5vh,64px);}
+    .test-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      padding:clamp(24px,2.5vh,36px);transition:border-color 0.3s;
+    }
+    .test-card:hover{border-color:var(--border-gold);}
+    .test-stars{display:flex;gap:4px;margin-bottom:16px;}
+    .test-stars span{color:var(--gold);font-size:14px;}
+    .test-text{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:24px;font-style:italic;}
+    .test-author{display:flex;align-items:center;gap:12px;}
+    .test-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a87c2a);display:grid;place-items:center;font-size:14px;font-weight:600;color:#0a0a0a;flex-shrink:0;}
+    .test-name{font-size:14px;font-weight:500;color:var(--text);}
+    .test-role{font-size:12px;color:var(--muted);}
+
+    /* ── CONTACT ── */
+    #contact{background:var(--bg2);}
+    .contact-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(40px,5vw,80px);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-field{margin-bottom:20px;}
+    .form-field label{display:block;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+    .form-field input,.form-field select,.form-field textarea{
+      width:100%;background:var(--input-bg);border:1px solid var(--border);
+      border-radius:10px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;
+      color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;
+    }
+    .form-field select option{background:var(--bg3);}
+    .form-field textarea{min-height:120px;}
+    .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+    .form-field.full{grid-column:1/-1;}
+    .contact-info{display:flex;flex-direction:column;gap:20px;}
+    .info-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px 24px;display:flex;align-items:flex-start;gap:16px;transition:border-color 0.3s;}
+    .info-card:hover{border-color:var(--border-gold);}
+    .info-icon{font-size:24px;flex-shrink:0;margin-top:2px;}
+    .info-title{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+    .info-val{font-size:14px;color:var(--muted);line-height:1.7;}
+    .info-val a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .info-val a:hover{color:var(--gold);}
+    .map-placeholder{
+      background:var(--card-bg);border:1px solid var(--border-gold);border-radius:14px;
+      padding:32px;display:flex;align-items:center;justify-content:center;
+      font-size:14px;color:var(--muted);gap:10px;flex:1;min-height:120px;position:relative;overflow:hidden;
+    }
+    .map-grid{
+      position:absolute;inset:0;
+      background-image:linear-gradient(rgba(201,168,76,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.06) 1px,transparent 1px);
+      background-size:30px 30px;
+    }
+
+    /* ── FOOTER ── */
+    footer{background:var(--footer-bg);color:var(--footer-text);padding:clamp(50px,7vh,80px) clamp(24px,6vw,80px) clamp(24px,3vh,40px);transition:background 0.4s,color 0.4s;}
+    .footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:clamp(32px,4vw,64px);margin-bottom:clamp(40px,5vh,60px);}
+    .footer-brand .logo-name{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2vw,28px);font-weight:300;letter-spacing:0.1em;margin-bottom:14px;}
+    .footer-brand .logo-name span{color:var(--gold);}
+    [data-theme="light"] footer .footer-brand .logo-name span{color:#5c3a00;}
+    .footer-brand p{font-size:14px;color:var(--footer-muted);line-height:1.75;max-width:280px;}
+    .footer-social{display:flex;gap:10px;margin-top:24px;}
+    .social-btn{
+      width:36px;height:36px;border-radius:8px;
+      border:1px solid rgba(255,255,255,0.15);
+      display:grid;place-items:center;font-size:13px;color:var(--footer-text);
+      text-decoration:none;transition:0.2s;
+    }
+    [data-theme="light"] .social-btn{border-color:rgba(0,0,0,0.15);color:var(--footer-text);}
+    .social-btn:hover{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+    [data-theme="light"] .social-btn:hover{background:#5c3a00;border-color:#5c3a00;color:#fff;}
+    footer h5{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+    [data-theme="light"] footer h5{color:#5c3a00;}
+    footer ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+    footer ul a{font-size:14px;color:var(--footer-muted);text-decoration:none;transition:color 0.2s;}
+    footer ul a:hover{color:var(--footer-text);}
+    .footer-bottom{padding-top:clamp(20px,3vh,32px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    [data-theme="light"] .footer-bottom{border-top-color:rgba(0,0,0,0.15);}
+    .footer-bottom p{font-size:13px;color:var(--footer-muted);}
+
+    /* Toast */
+    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gold);color:#0a0a0a;padding:12px 26px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1200px){
+      .features-grid{grid-template-columns:1fr;}
+      .feature-img{height:340px;}
+      .test-grid{grid-template-columns:1fr 1fr;}
+      .contact-grid{grid-template-columns:1fr;}
+      .footer-grid{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:900px){
+      .nav-links{display:none;}
+      .nav-right .btn-outline,.nav-right .btn-gold,.nav-right .nav-user{display:none;}
+      .hamburger{display:flex;}
+      .nav-right{gap:8px;}
+      .mode-btn{display:flex;}
+      .test-grid{grid-template-columns:1fr;}
+      .hero-img-panel{opacity:0.5;}
+    }
+    @media(max-width:600px){
+      .form-row{grid-template-columns:1fr;}
+      .footer-grid{grid-template-columns:1fr;}
+      .car-btn{display:none;}
+      .search-box{flex-direction:column;}
+    }
+    /* TV Scale */
+    @media(min-width:1800px){
+      :root{font-size:18px;}
+      nav{height:90px;}
+      .prop-card{width:clamp(340px,24vw,500px);}
+      .test-grid{grid-template-columns:repeat(3,1fr);}
+      .footer-grid{grid-template-columns:2fr 1fr 1fr 1fr;}
+    }
+    @media(min-width:2400px){
+      .prop-card{width:clamp(380px,20vw,560px);}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    Luxe<span>Estate</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="listings.html">Properties</a></li>
+    <li><a href="about.html">Our Story</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="mode-btn" onclick="toggleTheme()" aria-label="Toggle dark/light mode"></button>
+    <div id="navUserArea"></div>
+    <button class="hamburger" onclick="document.getElementById('mobileNav').classList.toggle('open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="document.getElementById('mobileNav').classList.remove('open')">✕</button>
+  <a href="index.html" onclick="document.getElementById('mobileNav').classList.remove('open')">Home</a>
+  <a href="listings.html" onclick="document.getElementById('mobileNav').classList.remove('open')">Properties</a>
+  <a href="about.html" onclick="document.getElementById('mobileNav').classList.remove('open')">Our Story</a>
+  <a href="index.html#contact" onclick="document.getElementById('mobileNav').classList.remove('open')">Contact</a>
+  <a href="login.html">Sign In</a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-img-panel">
+    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=80" alt="Luxury property"/>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Premium Real Estate • Est. 2009</div>
+    <h1 class="hero-title">Where <em>Luxury</em><br/>Meets Legacy</h1>
+    <p class="hero-sub">Discover the world's most exceptional residential and commercial properties — curated for investors and families who demand nothing but the finest.</p>
+    <div class="hero-actions">
+      <a href="listings.html" class="btn-lg gold">Explore Properties</a>
+      <a href="about.html" class="btn-lg ghost">Our Story</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-val">2.4<span>K+</span></div><div class="stat-label">Properties Listed</div></div>
+      <div><div class="stat-val">$<span>4.8B</span></div><div class="stat-label">Assets Managed</div></div>
+      <div><div class="stat-val">98<span>%</span></div><div class="stat-label">Client Satisfaction</div></div>
+      <div><div class="stat-val">42<span>+</span></div><div class="stat-label">Countries</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SEARCH BAR ── -->
+<div id="search-bar">
+  <div class="search-box">
+    <div class="s-group">
+      <label>Location</label>
+      <input type="text" placeholder="City, State or ZIP"/>
+    </div>
+    <div class="s-group">
+      <label>Property Type</label>
+      <select>
+        <option>All Types</option>
+        <option>Villa / House</option>
+        <option>Penthouse</option>
+        <option>Commercial</option>
+        <option>Waterfront</option>
+        <option>New Development</option>
+      </select>
+    </div>
+    <div class="s-group">
+      <label>Price Range</label>
+      <select>
+        <option>Any Price</option>
+        <option>$500K – $1M</option>
+        <option>$1M – $5M</option>
+        <option>$5M – $10M</option>
+        <option>$10M+</option>
+      </select>
+    </div>
+    <div class="s-group">
+      <label>Bedrooms</label>
+      <select>
+        <option>Any</option>
+        <option>1+</option>
+        <option>2+</option>
+        <option>3+</option>
+        <option>5+</option>
+      </select>
+    </div>
+    <button class="btn-search" onclick="window.location.href='listings.html'">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+  </div>
+</div>
+
+<!-- ── SPONSORS ── -->
+<section id="sponsors">
+  <div class="sponsors-label">Trusted Partnerships & Industry Recognition</div>
+  <div class="sponsors-track-wrap">
+    <div class="sponsors-track" id="sponsorsTrack">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── LISTINGS CAROUSEL ── -->
+<section id="listings">
+  <div class="listings-head reveal">
+    <div>
+      <div class="sec-tag">Featured Properties</div>
+      <h2 class="sec-title">Our <em>Listings</em></h2>
+      <p class="sec-sub">Handpicked properties from the world's most sought-after addresses.</p>
+    </div>
+    <a href="listings.html" class="btn-outline">View All Properties →</a>
+  </div>
+  <div class="carousel-wrap">
+    <button class="car-btn prev" onclick="scrollCarousel(-1)" aria-label="Previous">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="carousel" id="listingsCarousel">
+      <!-- filled by JS -->
+    </div>
+    <button class="car-btn next" onclick="scrollCarousel(1)" aria-label="Next">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+  <div class="car-dots" id="carDots"></div>
+</section>
+
+<!-- ── WHY CHOOSE US ── -->
+<section id="features">
+  <div class="features-grid">
+    <div class="feature-img reveal">
+      <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1000&q=80" alt="Luxury interior"/>
+      <div class="feature-badge">
+        <div class="feature-badge-icon">🏆</div>
+        <div class="feature-badge-text">
+          <strong>#1 Luxury Broker</strong>
+          <span>Forbes Real Estate Award 2024</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-tag reveal">Why LuxeEstate</div>
+      <h2 class="sec-title reveal">The Standard<br/>of <em>Excellence</em></h2>
+      <p class="sec-sub reveal">We combine decades of expertise with a deeply personalised approach — because exceptional properties deserve exceptional service.</p>
+      <div class="feature-items" style="margin-top:36px">
+        <div class="feature-item reveal">
+          <div class="feature-dot">🔍</div>
+          <div><h4>Curated Portfolio</h4><p>Every listing is personally vetted by our senior acquisitions team before it reaches our clients.</p></div>
+        </div>
+        <div class="feature-item reveal">
+          <div class="feature-dot">📊</div>
+          <div><h4>Market Intelligence</h4><p>Data-driven insights and real-time analytics to ensure you invest at precisely the right moment.</p></div>
+        </div>
+        <div class="feature-item reveal">
+          <div class="feature-dot">🤝</div>
+          <div><h4>Global Network</h4><p>Access to off-market properties through our exclusive network spanning 42 countries worldwide.</p></div>
+        </div>
+        <div class="feature-item reveal">
+          <div class="feature-dot">🔑</div>
+          <div><h4>White-Glove Service</h4><p>From private viewings to legal counsel, we manage every detail so you can focus on your vision.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="testimonials">
+  <div style="text-align:center;margin-bottom:clamp(40px,5vh,64px)">
+    <div class="sec-tag reveal">Client Stories</div>
+    <h2 class="sec-title reveal">What Our <em>Clients</em> Say</h2>
+  </div>
+  <div class="test-grid">
+    <div class="test-card reveal">
+      <div class="test-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <div class="test-text">"LuxeEstate found us our dream penthouse in Monaco within weeks. The level of discretion and attention to detail is unmatched. Truly an exceptional experience."</div>
+      <div class="test-author"><div class="test-avatar">JR</div><div><div class="test-name">James Richardson</div><div class="test-role">Tech CEO, Monaco</div></div></div>
+    </div>
+    <div class="test-card reveal">
+      <div class="test-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <div class="test-text">"From initial consultation to closing, the entire process was seamless. Their global network opened doors we didn't even know existed. Highly recommended."</div>
+      <div class="test-author"><div class="test-avatar">SL</div><div><div class="test-name">Sofia Laurent</div><div class="test-role">Investor, Paris</div></div></div>
+    </div>
+    <div class="test-card reveal">
+      <div class="test-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <div class="test-text">"LuxeEstate's market insights helped us secure a spectacular beachfront villa at precisely the right time. Our portfolio has grown 40% since working with them."</div>
+      <div class="test-author"><div class="test-avatar">MA</div><div><div class="test-name">Mohammed Al-Rashidi</div><div class="test-role">Portfolio Manager, Dubai</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(40px,5vh,64px);flex-wrap:wrap;gap:24px">
+    <div>
+      <div class="sec-tag reveal">Get In Touch</div>
+      <h2 class="sec-title reveal">Let's Find Your<br/><em>Perfect</em> Property</h2>
+    </div>
+  </div>
+  <div class="contact-grid">
+    <div class="reveal">
+      <div class="form-row">
+        <div class="form-field"><label>First Name</label><input type="text" placeholder="John"/></div>
+        <div class="form-field"><label>Last Name</label><input type="text" placeholder="Doe"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+        <div class="form-field"><label>Phone</label><input type="tel" placeholder="+1 (555) 000-0000"/></div>
+      </div>
+      <div class="form-field full">
+        <label>Property Interest</label>
+        <select><option>Select type</option><option>Buying</option><option>Renting</option><option>Selling</option><option>Investment</option></select>
+      </div>
+      <div class="form-field full"><label>Message</label><textarea placeholder="Tell us about your dream property…"></textarea></div>
+      <button class="btn-gold" style="padding:15px 40px;font-size:13px;letter-spacing:0.12em;border-radius:10px;margin-top:8px;font-family:'DM Sans',sans-serif;font-weight:500;text-transform:uppercase;" onclick="handleSubmit()">Send Message</button>
+    </div>
+    <div class="contact-info reveal">
+      <div class="info-card"><div class="info-icon">📍</div><div><div class="info-title">Head Office</div><div class="info-val">500 Park Avenue, Suite 2200<br/>New York, NY 10022</div></div></div>
+      <div class="info-card"><div class="info-icon">📞</div><div><div class="info-title">Phone</div><div class="info-val">+1 (800) 589-2200<br/>Mon–Fri, 9am–6pm EST</div></div></div>
+      <div class="info-card"><div class="info-icon">✉️</div><div><div class="info-title">Email</div><div class="info-val">hello@luxeestate.com<br/>invest@luxeestate.com</div></div></div>
+      <div class="map-placeholder"><div class="map-grid"></div><span style="position:relative;z-index:1">📍 500 Park Avenue, New York</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-name">Luxe<span>Estate</span></div>
+      <p>Connecting discerning clients with the world's most exceptional properties since 2009.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">ig</a>
+        <a href="#" class="social-btn">fb</a>
+      </div>
+    </div>
+    <div>
+      <h5>Properties</h5>
+      <ul>
+        <li><a href="listings.html">Residential</a></li>
+        <li><a href="listings.html">Commercial</a></li>
+        <li><a href="listings.html">Luxury Villas</a></li>
+        <li><a href="listings.html">New Developments</a></li>
+        <li><a href="listings.html">Investment</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Company</h5>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="about.html#team">Our Team</a></li>
+        <li><a href="about.html#awards">Awards</a></li>
+        <li><a href="about.html">Careers</a></li>
+        <li><a href="about.html">Press</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Support</h5>
+      <ul>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="login.html">Client Portal</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LuxeEstate. All rights reserved.</p>
+    <p>Designed with excellence.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── THEME ── */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('luxeTheme', theme);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur==='dark'?'light':'dark');
+}
+const savedTheme = localStorage.getItem('luxeTheme')||'dark';
+applyTheme(savedTheme);
+
+/* ── AUTH ── */
+function setupAuth() {
+  const user = JSON.parse(localStorage.getItem('luxeUser')||'null');
+  const area = document.getElementById('navUserArea');
+  if(user && user.loggedIn) {
+    const initial = user.name.charAt(0).toUpperCase();
+    area.innerHTML = `<a class="nav-user" href="#" onclick="handleLogout(event)">
+      <span class="avatar">${initial}</span>
+      <span>Welcome, ${user.name.split(' ')[0]}</span>
+    </a>`;
+  } else {
+    area.innerHTML = `<a href="login.html" class="btn-outline">Sign In</a><a href="login.html" class="btn-gold">Get Started</a>`;
+  }
+}
+function handleLogout(e) {
+  e.preventDefault();
+  if(confirm('Sign out of LuxeEstate?')) {
+    localStorage.removeItem('luxeUser');
+    location.reload();
+  }
+}
+setupAuth();
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY>40);
+});
+
+/* ── SPONSORS ── */
+const sponsors = [
+  {name:'Knight Frank',icon:'🏛'},
+  {name:'Christie\'s Real Estate',icon:'💎'},
+  {name:'Sotheby\'s International',icon:'🎨'},
+  {name:'Forbes Global',icon:'📊'},
+  {name:'Coldwell Banker',icon:'🏡'},
+  {name:'JLL Capital',icon:'🏢'},
+  {name:'CBRE Group',icon:'📈'},
+  {name:'Savills London',icon:'🇬🇧'},
+  {name:'Compass Realty',icon:'🧭'},
+  {name:'Douglas Elliman',icon:'🗽'},
+];
+function buildSponsors() {
+  const track = document.getElementById('sponsorsTrack');
+  const doubled = [...sponsors,...sponsors];
+  track.innerHTML = doubled.map(s=>`
+    <div class="sponsor-item">
+      <span style="font-size:18px">${s.icon}</span>
+      <div class="sponsor-logo">${s.name}</div>
+      <div class="sponsor-dot"></div>
+    </div>
+  `).join('');
+}
+buildSponsors();
+
+/* ── LISTINGS CAROUSEL ── */
+const properties = [
+  {img:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',price:'$8,500,000',name:'Villa Serenita',loc:'Beverly Hills, CA',beds:6,baths:7,sqft:'9,200',badge:'For Sale'},
+  {img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',price:'$4,200,000',name:'The Arch Residence',loc:'Miami Beach, FL',beds:4,baths:5,sqft:'5,800',badge:'New'},
+  {img:'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80',price:'$12,000,000',name:'Coastal Manor',loc:'Malibu, CA',beds:7,baths:8,sqft:'12,400',badge:'Exclusive'},
+  {img:'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80',price:'$6,750,000',name:'Azure Beachfront',loc:'Hamptons, NY',beds:5,baths:6,sqft:'7,100',badge:'For Sale'},
+  {img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',price:'$3,900,000',name:'Skyline Penthouse',loc:'Manhattan, NY',beds:3,baths:4,sqft:'4,200',badge:'Featured'},
+  {img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',price:'$9,200,000',name:'Palm Springs Estate',loc:'Palm Springs, CA',beds:6,baths:7,sqft:'10,600',badge:'Luxury'},
+  {img:'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80',price:'$5,400,000',name:'The Glass House',loc:'Aspen, CO',beds:4,baths:5,sqft:'6,800',badge:'New'},
+];
+
+function buildCarousel() {
+  const car = document.getElementById('listingsCarousel');
+  const dots = document.getElementById('carDots');
+  car.innerHTML = properties.map((p,i)=>`
+    <div class="prop-card" onclick="window.location.href='listings.html'">
+      <div class="prop-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+        <div class="prop-badge">${p.badge}</div>
+        <div class="prop-fav" id="fav${i}" onclick="toggleFav(event,${i})">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+      </div>
+      <div class="prop-info">
+        <div class="prop-price">${p.price}</div>
+        <div class="prop-name">${p.name}</div>
+        <div class="prop-loc">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${p.loc}
+        </div>
+        <div class="prop-meta">
+          <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M2 20v-3a4 4 0 014-4h12a4 4 0 014 4v3"/><path d="M7 7h.01M8 11c0 1.657-1.343 3-3 3s-3-1.343-3-3V7h6v4z"/></svg>${p.beds} Beds</div>
+          <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2"/><path d="M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6"/></svg>${p.baths} Baths</div>
+          <div class="prop-meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>${p.sqft} sqft</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // dots
+  dots.innerHTML = properties.map((_,i)=>`<div class="car-dot${i===0?' active':''}" onclick="goToDot(${i})"></div>`).join('');
+}
+
+function toggleFav(e, idx) {
+  e.stopPropagation();
+  document.getElementById('fav'+idx).classList.toggle('active');
+}
+
+function scrollCarousel(dir) {
+  const car = document.getElementById('listingsCarousel');
+  const cardW = car.querySelector('.prop-card').offsetWidth + 28;
+  car.scrollBy({left: dir*cardW, behavior:'smooth'});
+  updateDots();
+}
+
+function goToDot(idx) {
+  const car = document.getElementById('listingsCarousel');
+  const cardW = car.querySelector('.prop-card').offsetWidth + 28;
+  car.scrollTo({left: idx*cardW, behavior:'smooth'});
+  document.querySelectorAll('.car-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+function updateDots() {
+  const car = document.getElementById('listingsCarousel');
+  const cardW = car.querySelector('.prop-card')?.offsetWidth + 28 || 1;
+  const idx = Math.round(car.scrollLeft/cardW);
+  document.querySelectorAll('.car-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+buildCarousel();
+document.getElementById('listingsCarousel')?.addEventListener('scroll', updateDots);
+
+// drag-to-scroll
+let isDown=false, startX, scrollLeft;
+const car = document.getElementById('listingsCarousel');
+if(car){
+  car.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX-car.offsetLeft;scrollLeft=car.scrollLeft;});
+  car.addEventListener('mouseleave',()=>isDown=false);
+  car.addEventListener('mouseup',()=>isDown=false);
+  car.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-car.offsetLeft;car.scrollLeft=scrollLeft-(x-startX)*1.5;});
+}
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+/* ── CONTACT ── */
+function handleSubmit() {
+  showToast("Message sent! We'll be in touch shortly.");
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+</body>
+</html>

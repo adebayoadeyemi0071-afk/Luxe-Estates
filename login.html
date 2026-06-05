@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LuxeEstate — Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --gold:#c9a84c; --gold-light:#e2c97e; --gold-dim:rgba(201,168,76,0.12);
+      --bg:#080808; --bg2:#0f0f0f; --glass:rgba(8,8,8,0.75);
+      --text:#f0ece4; --muted:rgba(240,236,228,0.45); --border:rgba(201,168,76,0.18);
+    }
+    html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;overflow:hidden;}
+    canvas#particles{position:fixed;inset:0;width:100%;height:100%;z-index:0;}
+
+    /* grain overlay */
+    body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.35;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size:180px;}
+
+    /* radial vignette */
+    body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,rgba(0,0,0,0.6) 100%);}
+
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:stretch;}
+
+    /* ── LEFT PANEL ── */
+    .left-panel{
+      flex:1;display:flex;flex-direction:column;justify-content:space-between;
+      padding:56px 64px;position:relative;overflow:hidden;
+    }
+    .left-panel::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(201,168,76,0.08) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .left-geo{
+      position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+      width:320px;height:320px;border:1px solid rgba(201,168,76,0.08);
+      border-radius:50%;pointer-events:none;
+    }
+    .left-geo::before{
+      content:'';position:absolute;inset:40px;border:1px solid rgba(201,168,76,0.06);border-radius:50%;
+    }
+    .left-geo::after{
+      content:'';position:absolute;inset:80px;border:1px solid rgba(201,168,76,0.04);border-radius:50%;
+    }
+    .brand{position:relative;z-index:1;}
+    .brand-icon{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:56px;height:56px;border:1.5px solid var(--gold);border-radius:14px;
+      margin-bottom:20px;position:relative;overflow:hidden;
+    }
+    .brand-icon::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.2),transparent);}
+    .brand-name{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,2.5vw,38px);font-weight:300;letter-spacing:0.1em;color:var(--text);}
+    .brand-name span{color:var(--gold);font-weight:600;}
+    .brand-tag{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+
+    .left-hero{position:relative;z-index:1;}
+    .left-headline{
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(42px,4vw,68px);font-weight:300;line-height:1.05;
+      color:var(--text);letter-spacing:-0.01em;margin-bottom:20px;
+    }
+    .left-headline em{color:var(--gold);font-style:italic;}
+    .left-sub{font-size:15px;color:var(--muted);line-height:1.8;max-width:380px;}
+
+    .left-stats{display:flex;gap:48px;position:relative;z-index:1;}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);}
+    .stat-num span{color:var(--gold);}
+    .stat-lbl{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+    /* gold line accent */
+    .line-accent{width:48px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:40px;}
+
+    /* ── RIGHT PANEL (FORM) ── */
+    .right-panel{
+      width:480px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      padding:48px 56px;
+      background:var(--glass);
+      border-left:1px solid var(--border);
+      backdrop-filter:blur(28px) saturate(180%);
+    }
+    .card{width:100%;animation:cardIn 0.9s cubic-bezier(0.16,1,0.3,1) both;}
+    @keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+    .form-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);margin-bottom:6px;}
+    .form-sub{font-size:13px;color:var(--muted);margin-bottom:36px;line-height:1.6;}
+
+    .field{margin-bottom:20px;position:relative;}
+    .field label{display:block;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .field input{
+      width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px;padding:15px 16px;font-family:'DM Sans',sans-serif;font-size:14px;
+      color:var(--text);outline:none;
+      transition:border-color 0.25s,background 0.25s,box-shadow 0.25s;
+    }
+    .field input::placeholder{color:rgba(240,236,228,0.2);}
+    .field input:focus{border-color:var(--gold);background:rgba(201,168,76,0.06);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+    .eye-btn{position:absolute;right:14px;bottom:15px;background:none;border:none;cursor:pointer;color:var(--muted);transition:color 0.2s;padding:0;line-height:1;}
+    .eye-btn:hover{color:var(--gold);}
+
+    .row-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .remember{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--muted);user-select:none;}
+    .remember input[type="checkbox"]{display:none;}
+    .chk{width:17px;height:17px;border:1px solid rgba(201,168,76,0.35);border-radius:4px;display:grid;place-items:center;transition:0.2s;flex-shrink:0;}
+    .remember input:checked~.chk{background:var(--gold);border-color:var(--gold);}
+    .chk svg{opacity:0;transition:opacity 0.15s;}
+    .remember input:checked~.chk svg{opacity:1;}
+    .forgot{font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s,text-shadow 0.2s;}
+    .forgot:hover{color:var(--gold-light);text-shadow:0 0 12px rgba(201,168,76,0.5);}
+
+    .btn-login{
+      width:100%;padding:16px;
+      background:linear-gradient(135deg,var(--gold) 0%,#a87c2a 100%);
+      border:none;border-radius:10px;font-family:'DM Sans',sans-serif;
+      font-size:13px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;
+      color:#0a0a0a;cursor:pointer;position:relative;overflow:hidden;
+      transition:transform 0.2s,box-shadow 0.2s;
+      box-shadow:0 4px 28px rgba(201,168,76,0.28);
+    }
+    .btn-login::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.18),transparent);opacity:0;transition:opacity 0.2s;}
+    .btn-login:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(201,168,76,0.42);}
+    .btn-login:hover::before{opacity:1;}
+    .btn-login:active{transform:translateY(0);}
+    .btn-login.loading{pointer-events:none;opacity:0.75;}
+    .btn-login.loading span{opacity:0;}
+    .btn-login.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,0,0,0.25);border-top-color:#0a0a0a;border-radius:50%;animation:spin 0.6s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:26px 0;color:rgba(240,236,228,0.15);font-size:11px;letter-spacing:0.12em;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07);}
+
+    .sso-row{display:flex;gap:12px;}
+    .btn-sso{
+      flex:1;padding:13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+      border-radius:10px;color:var(--muted);font-size:12px;letter-spacing:0.06em;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      transition:0.2s;font-family:'DM Sans',sans-serif;
+    }
+    .btn-sso:hover{border-color:var(--border);background:rgba(201,168,76,0.06);color:var(--text);}
+
+    .signup-row{text-align:center;margin-top:26px;font-size:13px;color:var(--muted);}
+    .signup-row a{color:var(--gold);text-decoration:none;transition:color 0.2s;}
+    .signup-row a:hover{color:var(--gold-light);}
+
+    /* error state */
+    .field-error input{border-color:#e05555!important;box-shadow:0 0 0 3px rgba(224,85,85,0.12)!important;}
+    .field-err-msg{font-size:11px;color:#e05555;margin-top:5px;display:none;}
+    .field-error .field-err-msg{display:block;}
+
+    /* Toast */
+    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:var(--gold);color:#0a0a0a;padding:12px 26px;border-radius:8px;
+      font-size:13px;font-weight:500;z-index:999;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
+
+    /* Forgot Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:100;display:none;place-items:center;padding:24px;}
+    .modal-overlay.open{display:grid;}
+    .modal{background:#0f0f0f;border:1px solid var(--border);border-radius:20px;padding:44px 40px;max-width:400px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,0.85);animation:mIn 0.35s cubic-bezier(0.16,1,0.3,1) both;position:relative;}
+    @keyframes mIn{from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);}}
+    .modal h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:8px;}
+    .modal p{font-size:13px;color:var(--muted);margin-bottom:28px;}
+    .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;transition:color 0.2s;line-height:1;}
+    .modal-close:hover{color:var(--gold);}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .left-panel{display:none;}
+      .right-panel{width:100%;border-left:none;}
+    }
+    @media(max-width:480px){
+      .right-panel{padding:36px 28px;}
+      .form-title{font-size:30px;}
+    }
+    /* TV large screens */
+    @media(min-width:1800px){
+      .right-panel{width:560px;}
+      .left-panel{padding:72px 80px;}
+      .form-title{font-size:44px;}
+      .field input{padding:18px 20px;font-size:16px;}
+      .btn-login{padding:20px;font-size:14px;}
+    }
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<div class="page">
+  <!-- LEFT BRANDING PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M9 22V12h6v10" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-name">Luxe<span>Estate</span></div>
+      <div class="brand-tag">Premium Properties Worldwide</div>
+    </div>
+
+    <div class="left-hero">
+      <div class="line-accent"></div>
+      <div class="left-headline">Your <em>Dream</em><br/>Property Awaits</div>
+      <div class="left-sub">Access an exclusive portfolio of the world's most exceptional residential and commercial properties. Curated for the discerning investor.</div>
+    </div>
+
+    <div class="left-stats">
+      <div>
+        <div class="stat-num">2.4<span>K+</span></div>
+        <div class="stat-lbl">Properties</div>
+      </div>
+      <div>
+        <div class="stat-num">98<span>%</span></div>
+        <div class="stat-lbl">Client Satisfaction</div>
+      </div>
+      <div>
+        <div class="stat-num">15<span>+</span></div>
+        <div class="stat-lbl">Years Active</div>
+      </div>
+    </div>
+
+    <div class="left-geo"></div>
+  </div>
+
+  <!-- RIGHT FORM PANEL -->
+  <div class="right-panel">
+    <div class="card">
+      <div class="form-title">Welcome Back</div>
+      <div class="form-sub">Sign in to access your exclusive property portal</div>
+
+      <div class="field" id="fieldEmail">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+        <div class="field-err-msg">Please enter a valid email address</div>
+      </div>
+
+      <div class="field" id="fieldPass">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+        <button class="eye-btn" onclick="togglePass()" aria-label="Toggle password visibility">
+          <svg id="eyeIcon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <div class="field-err-msg">Password must be at least 6 characters</div>
+      </div>
+
+      <div class="row-meta">
+        <label class="remember">
+          <input type="checkbox" id="remember"/>
+          <span class="chk">
+            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+              <path d="M1 4l3 3 5-6" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Remember me
+        </label>
+        <a href="#" class="forgot" onclick="openForgot(event)">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" id="loginBtn" onclick="handleLogin()"><span>Sign In</span></button>
+
+      <div class="divider">or continue with</div>
+      <div class="sso-row">
+        <button class="btn-sso" onclick="ssoLogin('Google')">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="btn-sso" onclick="ssoLogin('GitHub')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.337 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          GitHub
+        </button>
+      </div>
+
+      <div class="signup-row">New to LuxeEstate? <a href="#" onclick="switchToSignup(event)">Create an account</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Modal -->
+<div class="modal-overlay" id="forgotModal" onclick="closeForgotOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeForgot()">✕</button>
+    <h2>Reset Password</h2>
+    <p>Enter your email and we'll send a secure reset link to your inbox.</p>
+    <div class="field"><label>Email Address</label><input type="email" id="resetEmail" placeholder="you@example.com"/></div>
+    <button class="btn-login" id="resetBtn" onclick="handleReset()" style="margin-top:8px"><span>Send Reset Link</span></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── NEURAL PARTICLE SYSTEM ── */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [], mouse = {x:-999, y:-999};
+const GOLD = 'rgba(201,168,76,', SILVER = 'rgba(240,236,228,';
+const NODE_COUNT = 100, CONNECT_DIST = 150;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+function createNode() {
+  return {
+    x: Math.random()*W, y: Math.random()*H,
+    vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5,
+    r: Math.random()*2+0.5,
+    pulse: Math.random()*Math.PI*2,
+    speed: Math.random()*0.02+0.01,
+    type: Math.random()>0.75?'accent':'normal'
+  };
+}
+
+function initNodes() { nodes = Array.from({length:NODE_COUNT}, createNode); }
+
+function drawNodes() {
+  ctx.clearRect(0,0,W,H);
+
+  // connections
+  for(let i=0;i<nodes.length;i++) {
+    for(let j=i+1;j<nodes.length;j++) {
+      const a=nodes[i], b=nodes[j];
+      const dx=a.x-b.x, dy=a.y-b.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d < CONNECT_DIST) {
+        const alpha = (1-d/CONNECT_DIST)*0.35;
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle = a.type==='accent'||b.type==='accent' ? GOLD+alpha+')' : SILVER+(alpha*0.4)+')';
+        ctx.lineWidth = a.type==='accent'||b.type==='accent' ? 0.8 : 0.4;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // mouse connections
+  nodes.forEach(n => {
+    const dx=mouse.x-n.x, dy=mouse.y-n.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d < 180) {
+      ctx.beginPath();
+      ctx.moveTo(n.x,n.y); ctx.lineTo(mouse.x,mouse.y);
+      ctx.strokeStyle = GOLD+(1-d/180)*0.5+')';
+      ctx.lineWidth=0.7; ctx.stroke();
+    }
+  });
+
+  // nodes
+  nodes.forEach(n => {
+    n.pulse += n.speed;
+    const glow = 0.5+0.5*Math.sin(n.pulse);
+    const color = n.type==='accent' ? GOLD : SILVER;
+    const alpha = n.type==='accent' ? 0.5+glow*0.5 : 0.2+glow*0.2;
+
+    // glow ring for accent nodes
+    if(n.type==='accent') {
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r*3,0,Math.PI*2);
+      ctx.fillStyle = GOLD+(alpha*0.12)+')';
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(n.x,n.y,n.r*(1+glow*0.3),0,Math.PI*2);
+    ctx.fillStyle = color+alpha+')';
+    ctx.fill();
+  });
+}
+
+function moveNodes() {
+  nodes.forEach(n => {
+    // mouse repulsion
+    const dx=mouse.x-n.x, dy=mouse.y-n.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<120) { n.vx+=dx*0.0002; n.vy+=dy*0.0002; }
+
+    n.x+=n.vx; n.y+=n.vy;
+    if(n.x<0||n.x>W) n.vx*=-1;
+    if(n.y<0||n.y>H) n.vy*=-1;
+
+    // speed limit
+    const sp=Math.sqrt(n.vx*n.vx+n.vy*n.vy);
+    if(sp>1.5){n.vx/=sp;n.vy/=sp;}
+  });
+}
+
+function loop() { moveNodes(); drawNodes(); requestAnimationFrame(loop); }
+window.addEventListener('resize',()=>{resize();initNodes();});
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+resize(); initNodes(); loop();
+
+/* ── AUTH ── */
+let passVisible = false;
+function togglePass() {
+  passVisible=!passVisible;
+  document.getElementById('password').type = passVisible?'text':'password';
+}
+
+function showToast(msg, type='success') {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background = type==='error'?'#e05555':'var(--gold)';
+  t.style.color = type==='error'?'#fff':'#0a0a0a';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+function validateEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+function handleLogin() {
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+  let valid = true;
+
+  document.getElementById('fieldEmail').classList.remove('field-error');
+  document.getElementById('fieldPass').classList.remove('field-error');
+
+  if(!validateEmail(email)){
+    document.getElementById('fieldEmail').classList.add('field-error'); valid=false;
+  }
+  if(pass.length < 6){
+    document.getElementById('fieldPass').classList.add('field-error'); valid=false;
+  }
+  if(!valid) return;
+
+  const btn = document.getElementById('loginBtn');
+  btn.classList.add('loading');
+
+  setTimeout(()=>{
+    // Derive name from email
+    let name = email.split('@')[0];
+    name = name.charAt(0).toUpperCase() + name.slice(1).replace(/[._\-]/g,' ');
+
+    // Check if existing user
+    const existing = JSON.parse(localStorage.getItem('luxeUser')||'null');
+    if(existing && existing.email===email) {
+      name = existing.name;
+    }
+
+    const user = {email, name, loggedIn:true, loginTime:Date.now()};
+    localStorage.setItem('luxeUser', JSON.stringify(user));
+    localStorage.setItem('luxeTheme', localStorage.getItem('luxeTheme')||'dark');
+
+    btn.classList.remove('loading');
+    showToast('Welcome back, '+name.split(' ')[0]+'! Redirecting…');
+    setTimeout(()=>{ window.location.href='index.html'; },1200);
+  }, 1800);
+}
+
+function ssoLogin(provider) {
+  const email = provider.toLowerCase()+'@example.com';
+  const name = provider + ' User';
+  const user = {email, name, loggedIn:true, loginTime:Date.now()};
+  localStorage.setItem('luxeUser', JSON.stringify(user));
+  showToast('Connecting to '+provider+'…');
+  setTimeout(()=>{ window.location.href='index.html'; },1500);
+}
+
+function switchToSignup(e){
+  e.preventDefault();
+  document.querySelector('.form-title').textContent='Create Account';
+  document.querySelector('.form-sub').textContent='Join LuxeEstate and explore premium properties worldwide';
+  document.querySelector('.signup-row').innerHTML='Already have an account? <a href="#" onclick="location.reload()">Sign in</a>';
+  showToast('Fill in your details to create a new account');
+}
+
+function openForgot(e){ e.preventDefault(); document.getElementById('forgotModal').classList.add('open'); }
+function closeForgot(){ document.getElementById('forgotModal').classList.remove('open'); }
+function closeForgotOutside(e){ if(e.target===e.currentTarget) closeForgot(); }
+function handleReset(){
+  const email=document.getElementById('resetEmail').value.trim();
+  if(!validateEmail(email)){ showToast('Please enter a valid email','error'); return; }
+  const btn=document.getElementById('resetBtn');
+  btn.classList.add('loading');
+  setTimeout(()=>{ btn.classList.remove('loading'); closeForgot(); showToast('Reset link sent to '+email); },1600);
+}
+
+// Enter key support
+document.addEventListener('keydown',e=>{ if(e.key==='Enter') handleLogin(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LuxeEstate — Our Story</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root[data-theme="dark"]{
+      --gold:#c9a84c; --gold-light:#e2c97e; --gold-dim:rgba(201,168,76,0.12);
+      --bg:#080808; --bg2:#0c0c0c; --bg3:#131313;
+      --text:#f0ece4; --muted:rgba(240,236,228,0.5);
+      --border:rgba(255,255,255,0.07); --border-gold:rgba(201,168,76,0.2);
+      --card-bg:#111111; --input-bg:rgba(255,255,255,0.04);
+      --nav-bg:rgba(8,8,8,0.9); --shadow:rgba(0,0,0,0.7);
+      --footer-bg:#000000; --footer-text:#f0ece4; --footer-muted:rgba(240,236,228,0.4);
+    }
+    :root[data-theme="light"]{
+      --gold:#b8922a; --gold-light:#d4a843; --gold-dim:rgba(184,146,42,0.1);
+      --bg:#faf7f0; --bg2:#f3ede1; --bg3:#ece4d4;
+      --text:#1c1408; --muted:rgba(28,20,8,0.55);
+      --border:rgba(0,0,0,0.08); --border-gold:rgba(184,146,42,0.3);
+      --card-bg:#ffffff; --input-bg:rgba(0,0,0,0.04);
+      --nav-bg:rgba(250,247,240,0.94); --shadow:rgba(0,0,0,0.12);
+      --footer-bg:#c9a84c; --footer-text:#0a0a0a; --footer-muted:rgba(10,10,10,0.6);
+    }
+
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;overflow-x:hidden;transition:background 0.4s,color 0.4s;}
+    ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:90;height:76px;display:flex;align-items:center;padding:0 clamp(24px,4vw,72px);justify-content:space-between;transition:background 0.4s,backdrop-filter 0.4s,border-bottom 0.4s;}
+    nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.1em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;}
+    .nav-logo span{color:var(--gold);font-weight:600;}
+    .nav-logo svg{stroke:var(--gold);}
+    .nav-links{display:flex;gap:clamp(20px,2.5vw,40px);list-style:none;}
+    .nav-links a{font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);}
+    .nav-right{display:flex;gap:14px;align-items:center;}
+    .mode-btn{width:44px;height:24px;background:var(--bg3);border:1px solid var(--border-gold);border-radius:100px;cursor:pointer;position:relative;transition:background 0.3s;flex-shrink:0;}
+    .mode-btn::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--gold);transition:transform 0.3s;}
+    [data-theme="light"] .mode-btn::after{transform:translateX(20px);}
+    .nav-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);padding:8px 16px;border:1px solid var(--border-gold);border-radius:100px;cursor:pointer;transition:background 0.2s;text-decoration:none;}
+    .nav-user:hover{background:var(--gold-dim);}
+    .nav-user .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a87c2a);display:grid;place-items:center;font-size:12px;font-weight:600;color:#0a0a0a;flex-shrink:0;}
+    .btn-outline{padding:9px 20px;border:1px solid var(--border-gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);text-decoration:none;transition:0.2s;}
+    .btn-outline:hover{background:var(--gold-dim);}
+    .btn-gold{padding:10px 22px;background:var(--gold);border-radius:8px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#0a0a0a;font-weight:500;text-decoration:none;transition:0.2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .btn-gold:hover{opacity:0.88;transform:translateY(-1px);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+    .hamburger span{width:22px;height:1.5px;background:var(--text);transition:0.3s;display:block;}
+    .mobile-nav{display:none;position:fixed;inset:0;background:var(--bg);z-index:89;flex-direction:column;align-items:center;justify-content:center;gap:32px;}
+    .mobile-nav.open{display:flex;}
+    .mobile-nav a{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s;}
+    .mobile-nav a:hover{color:var(--gold);}
+    .mobile-close{position:absolute;top:24px;right:24px;background:none;border:none;color:var(--muted);font-size:28px;cursor:pointer;}
+
+    /* ── HERO ── */
+    #hero{
+      min-height:72vh;display:flex;align-items:center;
+      padding:calc(76px + 60px) clamp(24px,6vw,80px) 80px;
+      position:relative;overflow:hidden;
+    }
+    .hero-bg{position:absolute;inset:0;z-index:0;}
+    .hero-bg img{width:100%;height:100%;object-fit:cover;opacity:0.12;}
+    [data-theme="light"] .hero-bg img{opacity:0.08;}
+    .hero-bg::before{content:'';position:absolute;inset:0;background:var(--bg);opacity:0.6;z-index:1;}
+    .hero-bg::after{content:'';position:absolute;inset:0;z-index:1;
+      background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);
+      background-size:60px 60px;animation:gridMove 20s linear infinite;
+    }
+    @keyframes gridMove{from{background-position:0 0;}to{background-position:60px 60px;}}
+    .hero-content{position:relative;z-index:2;text-align:center;max-width:840px;margin:0 auto;}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid var(--border-gold);border-radius:100px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;animation:fadeUp 0.8s 0.1s both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,7vw,96px);font-weight:300;line-height:1.04;color:var(--text);margin-bottom:24px;animation:fadeUp 0.8s 0.25s both;}
+    .hero-title em{color:var(--gold);font-style:italic;}
+    .hero-sub{font-size:clamp(14px,1.4vw,17px);color:var(--muted);max-width:560px;margin:0 auto 36px;line-height:1.8;animation:fadeUp 0.8s 0.4s both;}
+    .hero-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto;animation:fadeUp 0.8s 0.55s both;}
+
+    /* ── SECTIONS ── */
+    section{padding:clamp(60px,8vh,120px) clamp(24px,6vw,80px);}
+    .sec-tag{display:inline-block;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+    .sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4.5vw,62px);font-weight:300;line-height:1.1;color:var(--text);}
+    .sec-title em{font-style:italic;color:var(--gold);}
+    .sec-sub{font-size:clamp(13px,1.3vw,16px);color:var(--muted);max-width:500px;margin-top:16px;line-height:1.8;}
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    /* ── STORY ── */
+    #story{background:var(--bg2);}
+    .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,100px);align-items:center;}
+    .story-img{position:relative;border-radius:20px;overflow:hidden;height:clamp(340px,38vw,560px);}
+    .story-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+    .story-img:hover img{transform:scale(1.03);}
+    .story-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,0.5));}
+    .founding-badge{
+      position:absolute;bottom:24px;left:24px;z-index:1;
+      background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);border:1px solid var(--border-gold);
+      border-radius:12px;padding:16px 20px;
+    }
+    [data-theme="light"] .founding-badge{background:rgba(255,255,255,0.85);}
+    .founding-badge .year{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;}
+    .founding-badge .label{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);}
+    .story-text h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,54px);font-weight:300;color:var(--text);margin-bottom:24px;line-height:1.1;}
+    .story-text h2 em{color:var(--gold);font-style:italic;}
+    .story-text p{font-size:clamp(14px,1.3vw,16px);color:var(--muted);line-height:1.85;margin-bottom:20px;}
+    .story-text .sig{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.2vw,30px);font-weight:300;color:var(--text);margin-top:28px;padding-top:24px;border-top:1px solid var(--border);}
+    .story-text .sig small{display:block;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-family:'DM Sans',sans-serif;}
+
+    /* ── TIMELINE ── */
+    #timeline{background:var(--bg);}
+    .timeline-wrap{position:relative;max-width:900px;margin:clamp(40px,5vh,64px) auto 0;}
+    .timeline-line{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--border-gold),var(--border-gold),transparent);transform:translateX(-50%);}
+    .timeline-item{display:flex;gap:clamp(24px,4vw,60px);align-items:flex-start;margin-bottom:clamp(40px,5vh,60px);position:relative;}
+    .timeline-item:nth-child(even){flex-direction:row-reverse;}
+    .timeline-content{flex:1;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:clamp(20px,2.5vh,30px);transition:border-color 0.3s;}
+    .timeline-content:hover{border-color:var(--border-gold);}
+    .tl-year{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,4vw,52px);font-weight:300;color:var(--gold);line-height:1;margin-bottom:8px;}
+    .tl-title{font-size:clamp(15px,1.4vw,18px);font-weight:500;color:var(--text);margin-bottom:10px;}
+    .tl-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+    .timeline-dot{
+      width:clamp(40px,3.5vw,52px);height:clamp(40px,3.5vw,52px);flex-shrink:0;
+      border-radius:50%;background:var(--bg3);border:2px solid var(--gold);
+      display:grid;place-items:center;font-size:18px;position:relative;z-index:1;align-self:center;
+    }
+    .timeline-spacer{flex:1;}
+
+    /* ── VALUES ── */
+    #values{background:var(--bg2);}
+    .values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,36px);margin-top:clamp(40px,5vh,64px);}
+    .value-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:20px;
+      padding:clamp(28px,3vh,44px);text-align:center;transition:transform 0.3s,border-color 0.3s;
+    }
+    .value-card:hover{transform:translateY(-6px);border-color:var(--border-gold);}
+    .value-icon{font-size:clamp(36px,3.5vw,48px);margin-bottom:20px;}
+    .value-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2vw,28px);font-weight:300;color:var(--text);margin-bottom:12px;}
+    .value-desc{font-size:14px;color:var(--muted);line-height:1.75;}
+
+    /* ── TEAM ── */
+    #team{background:var(--bg);}
+    .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,28px);margin-top:clamp(40px,5vh,64px);}
+    .team-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      overflow:hidden;transition:transform 0.3s,border-color 0.3s;
+    }
+    .team-card:hover{transform:translateY(-5px);border-color:var(--border-gold);}
+    .team-img{height:clamp(200px,20vw,260px);overflow:hidden;position:relative;}
+    .team-img img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 0.5s;}
+    .team-card:hover .team-img img{transform:scale(1.05);}
+    .team-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.6));}
+    .team-info{padding:clamp(16px,2vh,22px);}
+    .team-name{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,1.8vw,22px);font-weight:300;color:var(--text);margin-bottom:4px;}
+    .team-role{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+    .team-bio{font-size:13px;color:var(--muted);line-height:1.6;}
+    .team-links{display:flex;gap:8px;margin-top:14px;}
+    .team-link{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);display:grid;place-items:center;font-size:12px;color:var(--muted);text-decoration:none;transition:0.2s;}
+    .team-link:hover{border-color:var(--border-gold);color:var(--gold);}
+
+    /* ── AWARDS ── */
+    #awards{background:var(--bg2);}
+    .awards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2vw,24px);margin-top:clamp(40px,5vh,64px);}
+    .award-card{
+      background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      padding:clamp(24px,3vh,36px);text-align:center;transition:border-color 0.3s;
+    }
+    .award-card:hover{border-color:var(--border-gold);}
+    .award-icon{font-size:36px;margin-bottom:14px;}
+    .award-year{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,44px);color:var(--gold);font-weight:300;line-height:1;}
+    .award-title{font-size:14px;font-weight:500;color:var(--text);margin:8px 0 4px;}
+    .award-org{font-size:12px;color:var(--muted);}
+
+    /* ── FOOTER ── */
+    footer{background:var(--footer-bg);color:var(--footer-text);padding:clamp(50px,7vh,80px) clamp(24px,6vw,80px) clamp(24px,3vh,40px);transition:background 0.4s,color 0.4s;}
+    .footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:clamp(32px,4vw,64px);margin-bottom:clamp(40px,5vh,60px);}
+    .footer-brand .logo-name{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2vw,28px);font-weight:300;letter-spacing:0.1em;margin-bottom:14px;}
+    .footer-brand .logo-name span{color:var(--gold);}
+    [data-theme="light"] footer .footer-brand .logo-name span{color:#5c3a00;}
+    .footer-brand p{font-size:14px;color:var(--footer-muted);line-height:1.75;max-width:280px;}
+    .footer-social{display:flex;gap:10px;margin-top:24px;}
+    .social-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);display:grid;place-items:center;font-size:13px;color:var(--footer-text);text-decoration:none;transition:0.2s;}
+    [data-theme="light"] .social-btn{border-color:rgba(0,0,0,0.15);color:var(--footer-text);}
+    .social-btn:hover{background:var(--gold);border-color:var(--gold);color:#0a0a0a;}
+    footer h5{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+    [data-theme="light"] footer h5{color:#5c3a00;}
+    footer ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+    footer ul a{font-size:14px;color:var(--footer-muted);text-decoration:none;transition:color 0.2s;}
+    footer ul a:hover{color:var(--footer-text);}
+    .footer-bottom{padding-top:clamp(20px,3vh,32px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    [data-theme="light"] .footer-bottom{border-top-color:rgba(0,0,0,0.15);}
+    .footer-bottom p{font-size:13px;color:var(--footer-muted);}
+
+    /* RESPONSIVE */
+    @media(max-width:1100px){.story-grid{grid-template-columns:1fr;}.team-grid{grid-template-columns:repeat(2,1fr);}.awards-grid{grid-template-columns:repeat(2,1fr);}.footer-grid{grid-template-columns:1fr 1fr;}}
+    @media(max-width:900px){.nav-links{display:none;}.nav-right .btn-outline,.nav-right .btn-gold,.nav-right .nav-user{display:none;}.hamburger{display:flex;}.values-grid{grid-template-columns:1fr 1fr;}.timeline-line{display:none;}.timeline-item,.timeline-item:nth-child(even){flex-direction:column;gap:0;}.timeline-content{width:100%;}.timeline-dot{align-self:auto;}}
+    @media(max-width:600px){.values-grid{grid-template-columns:1fr;}.team-grid{grid-template-columns:1fr;}.footer-grid{grid-template-columns:1fr;}}
+    @media(min-width:1800px){.team-grid{grid-template-columns:repeat(4,1fr);}.awards-grid{grid-template-columns:repeat(4,1fr);}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    Luxe<span>Estate</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="listings.html">Properties</a></li>
+    <li><a href="about.html" class="active">Our Story</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="mode-btn" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+    <div id="navUserArea"></div>
+    <button class="hamburger" onclick="document.getElementById('mobileNav').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="document.getElementById('mobileNav').classList.remove('open')">✕</button>
+  <a href="index.html">Home</a>
+  <a href="listings.html">Properties</a>
+  <a href="about.html" class="active">Our Story</a>
+  <a href="index.html#contact">Contact</a>
+  <a href="login.html">Sign In</a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600&q=80" alt="LuxeEstate HQ"/>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag" style="animation:fadeUp 0.8s 0.1s both">Est. 2009 • New York</div>
+    <h1 class="hero-title">The <em>Story</em> Behind<br/>LuxeEstate</h1>
+    <p class="hero-sub">Fifteen years of transforming the luxury real estate landscape. One vision — to connect exceptional people with exceptional places.</p>
+    <div class="hero-divider"></div>
+  </div>
+</section>
+
+<!-- ── STORY ── -->
+<section id="story">
+  <div class="story-grid">
+    <div class="story-img reveal">
+      <img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=900&q=80" alt="Founder vision"/>
+      <div class="founding-badge">
+        <div class="year">2009</div>
+        <div class="label">Year Founded</div>
+      </div>
+    </div>
+    <div class="story-text">
+      <div class="sec-tag reveal">Our Origin</div>
+      <h2 class="reveal">Born from a <em>Vision</em><br/>of Excellence</h2>
+      <p class="reveal">LuxeEstate was founded in 2009 by Alexander Mercer, a former investment banker who saw a critical gap in the market: ultra-high-net-worth clients deserved a property firm that matched their standards of excellence in every interaction.</p>
+      <p class="reveal">From a single office on Park Avenue with a team of five, we set out to redefine what luxury real estate meant — not just in terms of properties, but in the calibre of relationships, the depth of market intelligence, and the impeccable quality of service.</p>
+      <p class="reveal">Today, we operate in 42 countries with over 340 dedicated advisors. Yet our founding principle remains unchanged: every client deserves to feel they are our only client.</p>
+      <div class="sig reveal">
+        Alexander Mercer
+        <small>Founder & Chairman, LuxeEstate</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TIMELINE ── -->
+<section id="timeline">
+  <div style="text-align:center;margin-bottom:0">
+    <div class="sec-tag reveal">Our Journey</div>
+    <h2 class="sec-title reveal">Milestones That<br/><em>Defined</em> Us</h2>
+  </div>
+  <div class="timeline-wrap">
+    <div class="timeline-line"></div>
+    <div class="timeline-item reveal">
+      <div class="timeline-content">
+        <div class="tl-year">2009</div>
+        <div class="tl-title">Founded in New York</div>
+        <div class="tl-desc">Alexander Mercer opens the first LuxeEstate office on Park Avenue. Our debut listing — a $4.2M Manhattan penthouse — sells in 72 hours.</div>
+      </div>
+      <div class="timeline-dot">🏛</div>
+      <div class="timeline-spacer"></div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot">🌍</div>
+      <div class="timeline-content">
+        <div class="tl-year">2012</div>
+        <div class="tl-title">International Expansion</div>
+        <div class="tl-desc">We open offices in London, Dubai and Monaco, establishing our footprint in three of the world's most competitive luxury markets simultaneously.</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-content">
+        <div class="tl-year">2015</div>
+        <div class="tl-title">$1 Billion Milestone</div>
+        <div class="tl-desc">LuxeEstate crosses $1 billion in total transaction value. Named "Best Luxury Broker" by Forbes Real Estate for the first time.</div>
+      </div>
+      <div class="timeline-dot">💎</div>
+      <div class="timeline-spacer"></div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot">📱</div>
+      <div class="timeline-content">
+        <div class="tl-year">2018</div>
+        <div class="tl-title">Digital Transformation</div>
+        <div class="tl-desc">Launch of our proprietary platform and virtual viewing technology, setting the new standard for digital luxury property experiences worldwide.</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-content">
+        <div class="tl-year">2022</div>
+        <div class="tl-title">Asia-Pacific Launch</div>
+        <div class="tl-desc">Opening of flagship offices in Singapore, Tokyo and Sydney, completing our global coverage across all major luxury real estate markets.</div>
+      </div>
+      <div class="timeline-dot">🌏</div>
+      <div class="timeline-spacer"></div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot">🏆</div>
+      <div class="timeline-content">
+        <div class="tl-year">2026</div>
+        <div class="tl-title">$4.8B in Assets</div>
+        <div class="tl-desc">We now manage $4.8B in property assets across 42 countries, with 340 advisors serving over 8,000 satisfied clients globally. Our next chapter begins.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VALUES ── -->
+<section id="values">
+  <div style="text-align:center">
+    <div class="sec-tag reveal">Our Values</div>
+    <h2 class="sec-title reveal">The <em>Principles</em><br/>We Live By</h2>
+  </div>
+  <div class="values-grid">
+    <div class="value-card reveal">
+      <div class="value-icon">🎯</div>
+      <div class="value-title">Absolute Integrity</div>
+      <div class="value-desc">Every recommendation we make is guided purely by what is best for our client — never by commission or convenience. Trust is our most valuable asset.</div>
+    </div>
+    <div class="value-card reveal">
+      <div class="value-icon">💡</div>
+      <div class="value-title">Exceptional Insight</div>
+      <div class="value-desc">Our advisors are chosen for their deep market knowledge and analytical rigour. We don't just sell properties — we provide strategic intelligence.</div>
+    </div>
+    <div class="value-card reveal">
+      <div class="value-icon">🌟</div>
+      <div class="value-title">Uncompromising Quality</div>
+      <div class="value-desc">From the first call to final handover, every touchpoint reflects the same standard of excellence. We will not settle for anything less than extraordinary.</div>
+    </div>
+    <div class="value-card reveal">
+      <div class="value-icon">🤝</div>
+      <div class="value-title">Lasting Relationships</div>
+      <div class="value-desc">82% of our business comes from existing clients and referrals. Relationships built on trust, discretion and genuine care for our clients' long-term prosperity.</div>
+    </div>
+    <div class="value-card reveal">
+      <div class="value-icon">🌍</div>
+      <div class="value-title">Global Perspective</div>
+      <div class="value-desc">With offices in 42 countries, we bring true global context to every decision — understanding local nuances while seeing the worldwide opportunity.</div>
+    </div>
+    <div class="value-card reveal">
+      <div class="value-icon">♻️</div>
+      <div class="value-title">Responsible Stewardship</div>
+      <div class="value-desc">We actively prioritise sustainable properties and responsible development — because exceptional properties should also be exceptional for the planet.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TEAM ── -->
+<section id="team">
+  <div style="text-align:center;margin-bottom:0">
+    <div class="sec-tag reveal">The Team</div>
+    <h2 class="sec-title reveal">Meet Our <em>Leadership</em></h2>
+    <p class="sec-sub reveal" style="margin:16px auto 0;text-align:center">World-class advisors with decades of collective expertise in luxury real estate markets globally.</p>
+  </div>
+  <div class="team-grid" style="margin-top:clamp(40px,5vh,64px)">
+    <div class="team-card reveal">
+      <div class="team-img"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Alexander Mercer"/></div>
+      <div class="team-info">
+        <div class="team-name">Alexander Mercer</div>
+        <div class="team-role">Founder & Chairman</div>
+        <div class="team-bio">Former Goldman Sachs VP. Founded LuxeEstate in 2009 after identifying a gap in the ultra-luxury market.</div>
+        <div class="team-links"><a href="#" class="team-link">in</a><a href="#" class="team-link">𝕏</a></div>
+      </div>
+    </div>
+    <div class="team-card reveal">
+      <div class="team-img"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80" alt="Sophia Chen"/></div>
+      <div class="team-info">
+        <div class="team-name">Sophia Chen</div>
+        <div class="team-role">CEO & Co-Founder</div>
+        <div class="team-bio">Harvard MBA. Drives global strategy and has personally overseen $1.2B in transactions across Asia-Pacific.</div>
+        <div class="team-links"><a href="#" class="team-link">in</a><a href="#" class="team-link">𝕏</a></div>
+      </div>
+    </div>
+    <div class="team-card reveal">
+      <div class="team-img"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80" alt="James Harlow"/></div>
+      <div class="team-info">
+        <div class="team-name">James Harlow</div>
+        <div class="team-role">Head of Europe</div>
+        <div class="team-bio">20 years of London & Monaco market expertise. Specialises in waterfront estates and historic properties.</div>
+        <div class="team-links"><a href="#" class="team-link">in</a><a href="#" class="team-link">𝕏</a></div>
+      </div>
+    </div>
+    <div class="team-card reveal">
+      <div class="team-img"><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80" alt="Aisha Okonkwo"/></div>
+      <div class="team-info">
+        <div class="team-name">Aisha Okonkwo</div>
+        <div class="team-role">Head of Middle East & Africa</div>
+        <div class="team-bio">15 years in Dubai and Abu Dhabi luxury markets. Fluent in five languages and specialist in investment properties.</div>
+        <div class="team-links"><a href="#" class="team-link">in</a><a href="#" class="team-link">𝕏</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AWARDS ── -->
+<section id="awards">
+  <div style="text-align:center">
+    <div class="sec-tag reveal">Recognition</div>
+    <h2 class="sec-title reveal">Industry <em>Awards</em></h2>
+  </div>
+  <div class="awards-grid">
+    <div class="award-card reveal"><div class="award-icon">🏆</div><div class="award-year">2024</div><div class="award-title">Best Luxury Broker</div><div class="award-org">Forbes Real Estate</div></div>
+    <div class="award-card reveal"><div class="award-icon">🌟</div><div class="award-year">2023</div><div class="award-title">Global Excellence Award</div><div class="award-org">International Property Awards</div></div>
+    <div class="award-card reveal"><div class="award-icon">💎</div><div class="award-year">2022</div><div class="award-title">Top 100 Companies</div><div class="award-org">Bloomberg Markets</div></div>
+    <div class="award-card reveal"><div class="award-icon">📊</div><div class="award-year">2021</div><div class="award-title">Market Leader Award</div><div class="award-org">Knight Frank Global</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-name">Luxe<span>Estate</span></div>
+      <p>Connecting discerning clients with the world's most exceptional properties since 2009.</p>
+      <div class="footer-social">
+        <a href="#" class="social-btn">in</a><a href="#" class="social-btn">𝕏</a><a href="#" class="social-btn">ig</a><a href="#" class="social-btn">fb</a>
+      </div>
+    </div>
+    <div><h5>Properties</h5><ul><li><a href="listings.html">Residential</a></li><li><a href="listings.html">Commercial</a></li><li><a href="listings.html">Luxury Villas</a></li><li><a href="listings.html">New Developments</a></li></ul></div>
+    <div><h5>Company</h5><ul><li><a href="about.html">About Us</a></li><li><a href="#team">Our Team</a></li><li><a href="#awards">Awards</a></li><li><a href="#">Careers</a></li></ul></div>
+    <div><h5>Support</h5><ul><li><a href="index.html#contact">Contact</a></li><li><a href="#">FAQ</a></li><li><a href="#">Privacy Policy</a></li><li><a href="login.html">Client Portal</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LuxeEstate. All rights reserved.</p>
+    <p>Designed with excellence.</p>
+  </div>
+</footer>
+
+<script>
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('luxeTheme',t);}
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');}
+applyTheme(localStorage.getItem('luxeTheme')||'dark');
+
+function setupAuth(){
+  const user=JSON.parse(localStorage.getItem('luxeUser')||'null');
+  const area=document.getElementById('navUserArea');
+  if(user&&user.loggedIn){
+    area.innerHTML=`<a class="nav-user" href="#" onclick="handleLogout(event)"><span class="avatar">${user.name.charAt(0)}</span><span>Welcome, ${user.name.split(' ')[0]}</span></a>`;
+  } else {
+    area.innerHTML=`<a href="login.html" class="btn-outline">Sign In</a><a href="login.html" class="btn-gold">Get Started</a>`;
+  }
+}
+function handleLogout(e){e.preventDefault();if(confirm('Sign out?')){localStorage.removeItem('luxeUser');location.reload();}}
+setupAuth();
+
+window.addEventListener('scroll',()=>{document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>40);});
+
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
